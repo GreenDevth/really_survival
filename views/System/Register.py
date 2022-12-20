@@ -4,7 +4,6 @@ import discord
 from discord.ext import commands
 
 from func.config import steam_check, save_to_db
-from func.member import user_info
 from server.information import reg_success
 from views.Members.MemberViews import UsersViews
 

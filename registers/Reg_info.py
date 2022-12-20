@@ -2,7 +2,6 @@ import discord
 from discord.ext import commands
 
 from db.users import Users
-from func.config import img_
 from views.System.Register import RegisterButton
 
 

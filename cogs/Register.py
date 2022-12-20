@@ -1,19 +1,12 @@
 import discord.ui
-import requests
 from discord.ext import commands
 
 from db.users import Users
-from func.config import get_cooldown_time, config_, database_check
-from includes.information import server_info, reg_info
+from func.config import get_cooldown_time, database_check, battle_info, server_status
 from registers.Reg_info import Register_Access
-from views.Register import RegisterButton, CloseRegisterButton
+from server.information import server_info, reg_info
+from views.System.Register import RegisterButton, CloseRegisterButton
 
-auth = config_()["battle_token"]
-head = {'Authorization': 'Brarer' + auth}
-
-def battle_info():
-    res = requests.get(config_()["server_url"], headers=head)
-    return res.json()
 
 class Register(commands.Cog):
     def __init__(self, bot):
@@ -60,6 +53,10 @@ class RegisterVeiw(discord.ui.View):
         if retry:
             return await interaction.response.send_message(
                 f'อีก {round(retry, int(get_cooldown_time()))} วินาที คำสั่งถึงจะพร้อมใช้งานอีกครั้ง', ephemeral=True)
+
+        if Users().check(interaction.user.id) != 0:
+            return await interaction.response.send_message(f"⚠️ {interaction.user.mention} คุณได้สมัครเข้าร่วมโปรเจค The Walking Dead เป็นที่เรียบร้อยแล้ว", ephemeral=True)
+
         await interaction.response.defer(ephemeral=True, invisible=False)
         try:
             if database_check(r'./db/users.db'):
@@ -104,16 +101,4 @@ class RegisterVeiw(discord.ui.View):
         except Exception as e:
             return await interaction.followup.send(e)
         else:
-            result = f"```\nServer: {jsonObj['data']['attributes']['name']}" \
-                     f"\n======================================" \
-                     f"\nIP: {jsonObj['data']['attributes']['ip']}:{jsonObj['data']['attributes']['port']}" \
-                     f"\nStatus: {jsonObj['data']['attributes']['status']}" \
-                     f"\nTime in Game: {jsonObj['data']['attributes']['details']['time']}" \
-                     f"\nPlayers: {jsonObj['data']['attributes']['players']}/{jsonObj['data']['attributes']['maxPlayers']}" \
-                     f"\nRanking: #{jsonObj['data']['attributes']['rank']}" \
-                     f"\nGame version: {jsonObj['data']['attributes']['details']['version']}\n" \
-                     f"\nServer Restarts Every 6 hours" \
-                     f"\nDay 3.8 hours, Night 1 hours" \
-                     f"\n======================================" \
-                     f"\n14Studio, Copyright © 1983 - 2023```"
-            return await interaction.followup.send(result.strip())
+            return await interaction.followup.send(server_status())

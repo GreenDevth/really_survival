@@ -3,8 +3,9 @@ import asyncio
 import discord
 from discord.ext import commands
 
-from func.config import steam_check
-from includes.information import reg_success
+from func.config import steam_check, save_to_db
+from func.member import user_info
+from server.information import reg_success
 from views.Members.MemberViews import UsersViews
 
 
@@ -52,11 +53,13 @@ class RegisterButton(discord.ui.View):
 
             try:
                 steam = await self.bot.wait_for(event="message", check=check, timeout=60)
-                print(steam.content)
+                # print(steam.content)
                 if steam_check(steam.content):
                     await steam.delete()
                     # print("register successfully...")
-                    return await qustion.edit(content=None, embed=reg_success(member, steam.content), view=CloseRegisterButton(self.bot))
+                    await qustion.edit(content=None, embed=reg_success(member, steam.content), view=CloseRegisterButton(self.bot))
+                    return save_to_db(member.id, steam.content)
+                    # return await discord.DMChannel.send(member, "")
             except asyncio.TimeoutError:
                 # print("Progress TimeOut!!!!")
                 return await qustion.edit(f"{interaction.user.mention} : คุณใช้เวลาในการกรอกข้อมูลเช้าเกินไป กรุณากดปุ่มเพื่อเริ่มลงทะเบียนใหม่อีกครั้ง")

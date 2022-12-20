@@ -64,6 +64,10 @@ class AdminCommand(commands.Cog):
         except Exception as e:
             await ctx.response.send_message(e, ephemeral=True)
 
+    @admin.command(name="เช็คสิทธิ์ใช้งานเซิร์ฟคงเหลือ", description="ระบบตรวจสอบจำนวนสิทธิ์คงเหลือ")
+    async def access_total(self,ctx:discord.Interaction):
+        await ctx.response.send_message(Users().user_count()[0], ephemeral=True)
+
 
 
 

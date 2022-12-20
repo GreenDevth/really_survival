@@ -1,0 +1,19 @@
+{
+  "roles": [
+        "Trader",
+        "Security",
+        "Farmer",
+        "Engineer",
+        "Citizen",
+        "Homeless",
+        "Bandit",
+        "Taxi",
+        "Hunter",
+        "Fisherman",
+        "Police",
+        "Soldier",
+        "Exclusive",
+        "Joiners"
+      ]
+
+}

@@ -3,8 +3,7 @@ from discord.ext import commands
 
 from db.users import Users
 from func.config import img_
-from includes.information import reg_info, steam_reg
-from views.Register import RegisterButton
+from views.System.Register import RegisterButton
 
 
 def count_access():
@@ -19,19 +18,19 @@ class Register_Access(discord.ui.View):
         self.bot = bot
         self.cooldown = commands.CooldownMapping.from_cooldown(1, 30, commands.BucketType.member)
 
-    @discord.ui.button(label=f"จำนวนสิทธิ์คงเหลือ {count_access()}", style=discord.ButtonStyle.secondary, emoji="🔐",custom_id="count_access")
-    async def count_access(self, button, interaction:discord.Interaction):
-        button.label = None
-        interaction.message.author = interaction.user
-        bucket = self.cooldown.get_bucket(interaction.message)
-        retry = bucket.update_rate_limit()
-        if retry:
-            return await interaction.response.send_message(
-                f'กรุณารออีก {round(retry, 30)} วินาที คำสั่งถึงจะพร้อมใช้งานอีกครั้ง', ephmeral=True
-            )
-        return await interaction.response.edit_message(content=f"จำนวนสิทธิ์คงเหลือตอนนี้เท่ากับ {count_access()} สิทธิ์", view=None)
+    # @discord.ui.button(label=f"เช็คจำนวนสิทธิ์คงเหลือ", style=discord.ButtonStyle.secondary, emoji="🔐",custom_id="count_access")
+    # async def count_access(self, button, interaction:discord.Interaction):
+    #     button.disabled =False
+    #     interaction.message.author = interaction.user
+    #     bucket = self.cooldown.get_bucket(interaction.message)
+    #     retry = bucket.update_rate_limit()
+    #     if retry:
+    #         return await interaction.response.send_message(
+    #             f'กรุณารออีก {round(retry, 30)} วินาที คำสั่งถึงจะพร้อมใช้งานอีกครั้ง', ephmeral=True
+    #         )
+    #     return await interaction.response.edit_message(content=f"จำนวนสิทธิ์คงเหลือตอนนี้เท่ากับ {count_access()} สิทธิ์", view=None, embed=None)
 
-    @discord.ui.button(label="Accept", style=discord.ButtonStyle.success, emoji="💾", custom_id='reg_access')
+    @discord.ui.button(label="สมัครสมาชิก", style=discord.ButtonStyle.secondary, emoji="📝", custom_id='reg_access')
     async def reg_access(self, button, interaction: discord.Interaction):
         interaction.message.author = interaction.user
         bucket = self.cooldown.get_bucket(interaction.message)
@@ -82,16 +81,16 @@ class Register_Access(discord.ui.View):
                 register_channel = await guild.create_text_channel(name=room_name, category=cate, overwrites=overwrites)
                 await interaction.response.edit_message(content=f"ไปยังห้อง {register_channel.mention} เพื่อเข้าสู่ระบบลงทะเบียน", view=None, embed=None)
                 return await register_channel.send(file=discord.File('./img/concept/steam.png'), view=RegisterButton(self.bot))
-    @discord.ui.button(label="Reject", style=discord.ButtonStyle.danger, emoji="⚠", custom_id="reg_access_cancle")
-    async def reg_access_cancle(self, button, interaction:discord.Interaction):
-        button.disabled=False
-        user = interaction.user
-        txt = """ขอบคุณที่ให้ความสนใจต่อเซิร์ฟของเรา"""
-        txt1 = f"""{user.display_name} - ระบบกำลังนำคุณออกจากระบบ"""
-        embed = discord.Embed(
-            title=txt1,
-            description=txt,
-            colour=discord.Colour.from_rgb(214, 27, 9)
-        )
-        embed.set_image(url=img_('goodbye'))
-        await interaction.response.edit_message(content=None,view=None,embed=embed)
+    # @discord.ui.button(label="ยกเลิกสมัครเข้าร่วมโครงการ", style=discord.ButtonStyle.secondary, emoji="⚠", custom_id="reg_access_cancle")
+    # async def reg_access_cancle(self, button, interaction:discord.Interaction):
+    #     button.disabled=False
+    #     user = interaction.user
+    #     txt = """ขอบคุณที่ให้ความสนใจต่อเซิร์ฟของเรา"""
+    #     txt1 = f"""{user.display_name} - ระบบกำลังนำคุณออกจากระบบ"""
+    #     embed = discord.Embed(
+    #         title=txt1,
+    #         description=txt,
+    #         colour=discord.Colour.from_rgb(214, 27, 9)
+    #     )
+    #     embed.set_image(url=img_('goodbye'))
+    #     await interaction.response.edit_message(content=None,view=None,embed=embed)

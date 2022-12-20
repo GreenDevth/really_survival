@@ -69,6 +69,25 @@ class AdminCommand(commands.Cog):
         await ctx.response.send_message(Users().user_count()[0], ephemeral=True)
 
 
+    @admin.command(name="ปรับสิทธิ์ใช้งานเซิร์ฟ", description="ระบบปรับสิทธิ์การเข้าใช้งานเซิร์ฟเวอร์")
+    async def access_approved(
+            self,
+            ctx:discord.Interaction,
+            choise:Option(str, "เลือกคำสั่งที่ต้องการ", choices=["ถอนสิทธิ์", "ให้สิทธิ์"]),
+            member:Option(discord.Member, "เลือกผู้เล่นที่ต้องการปรับสิทธิ์เข้าใช้งานเซิร์ฟ")
+    ):
+        method = ["ถอนสิทธิ์", "ให้สิทธิ์"]
+        try:
+            if choise == method[0]:
+                Users().approved(member.id, 0)
+                return await ctx.response.send_message(f"ระบบทำการปลดสิทธิ์เข้าใช้งานสำหรับ {member.mention} เรียบร้อยแล้ว", ephemeral=True)
+            elif choise == method[1]:
+                Users().approved(member.id, 1)
+                return await ctx.response.send_message(f"ระบบทำการปรับสิทธิ์เข้าใช้งานให้กับ {member.mention} เรียบร้อยแล้ว", ephemeral=True)
+        except Exception as e:
+            return await ctx.response.send_message(e, ephemeral=True)
+
+
 
 
 def setup(bot):

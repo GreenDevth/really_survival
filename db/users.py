@@ -17,7 +17,7 @@ class Users:
             discord_id text null ,
             steam_id text null ,
             wallet integer null default 0,
-            nickname text null,
+            party_name text null,
             join_date text null,
             verify integer null default 0 ,
             primary key (id autoincrement )
@@ -30,6 +30,8 @@ class Users:
         return self.db.execute('insert into users(discord_id, steam_id, join_date) values (?,?, ?)',(member, steam, join_date,))
 
     def player(self, member):
-        return self.db.fetchall('select * from users where discord_id=?', (member,))
+        return self.db.fetchone('select * from users where discord_id=?', (member,))
     def check(self, member):
         return self.db.fetchone('select count(*) from users where discord_id=?',(member,))[0]
+    def approved(self, member, number):
+        return self.db.execute('update users set verify=? where discord_id=?', (number, member,))

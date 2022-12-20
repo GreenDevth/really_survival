@@ -4,9 +4,9 @@ from discord.commands import SlashCommandGroup, Option
 from discord.ext import commands
 
 from scripts.guilds import category, channels, guild_data, discord_roles, roles_colour, separate_channles, roles_lists
-from views.InfoView import InformationViews
-from views.ManualViews import PopulationManualView
 from views.Members.MemberViews import UsersViews
+from views.System.InfoView import InformationViews
+from views.System.ManualViews import PopulationManualView
 
 guild_id = guild_data()["roleplay"]
 categories_list = category()

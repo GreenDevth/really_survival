@@ -1,7 +1,9 @@
 import discord
 from discord.ext import commands
 
+from db.users import Users
 from func.config import get_cooldown_time
+from func.member import user_info
 
 
 class UsersViews(discord.ui.View):
@@ -19,7 +21,10 @@ class UsersViews(discord.ui.View):
         if retry:
             return await interaction.response.send_message(
                 f'อีก {round(retry, int(get_cooldown_time()))} วินาที คำสั่งถึงจะพร้อมใช้งานอีกครั้ง', ephemeral=True)
-        await interaction.response.send_message(f"{interaction.user.mention} click {button.label}")
+        if Users().check(interaction.user.id) == 0:
+            return await interaction.response.send_message(f"⚠️ {interaction.user.mention} คุณถูกระบบปลดสิทธิ์การเข้าใช้งานเซิร์ฟ ไม่มีข้อมูลของคุณในระบบ", ephemeral=True)
+        await interaction.response.defer(ephemeral=True, invisible=False)
+        return await interaction.followup.send(embed=user_info(interaction.user))
 
     @discord.ui.button(label="กระดานภารกิจ", style=discord.ButtonStyle.secondary, emoji="🎡", custom_id='user_quest')
     async def user_quest(self, button, interaction:discord.Interaction):

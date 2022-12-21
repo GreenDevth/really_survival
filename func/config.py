@@ -21,6 +21,10 @@ def config_():
         data = json.load(f)
         return data
 
+def channels_():
+    with open('./json_file/channels.json', 'r', encoding='utf-8') as f:
+        data = json.load(f)
+        return data
 
 def img_(txt):
     with open('./json_file/image.json', 'r', encoding='utf-8') as img:

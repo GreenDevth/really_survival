@@ -1,7 +1,8 @@
 import discord.ui
 from discord.ext import commands
 
-from server.Supporter import donate
+from server.Supporter import donate, ticket_open
+from views.Contract.ContactCloseView import ContactCloseButton
 
 
 class ContractButton(discord.ui.View):
@@ -51,7 +52,7 @@ class ContractButton(discord.ui.View):
                 }
             contact_channel = await guild.create_text_channel(name=channel_name, category=cate, overwrites=overwrites)
             await interaction.response.edit_message(content=f"ไปยังห้อง {contact_channel.mention} เพื่อแจ้งปัญหา หรือติดต่อทีมงาน", view=None)
-            return await contact_channel.send(f"{member.mention} พิมพ์ข้อสอบถาม หรือข้อเสนอแนะของคุณ ทางทีมงานจะพยายามตอบกลับให้เร็วที่สุด \n<@499914273049542677>")
+            return await contact_channel.send(f"{member.mention}",embed=ticket_open(), view=ContactCloseButton(self.bot))
     @discord.ui.button(label="สนับสนุนเซิร์ฟ", style=discord.ButtonStyle.secondary, emoji="💳", custom_id="support_server")
     async def support_server(self, button, interaction:discord.Interaction):
         button.disabled=False

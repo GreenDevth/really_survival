@@ -8,3 +8,11 @@ def donate():
           "ผ่านทางบัญชีธนาคารกสิกรไทย เลขที่\n" \
           "` 035-8-08192-4 ` นายธีรพงษ์ บัวงาม"
     return txt.strip()
+
+def ticket_open():
+    embed = discord.Embed(
+        title="✉️ Really Survival Helper System",
+        description="พิมพ์หัวข้อ หรือเรื่องที่ต้องการติดต่อพร้อมรายละเอียดที่ห้องนี้\nทางทีมงานจะพยายามตอบกลับให้เร็วที่สุด"
+    )
+    embed.set_footer(text="ทีมงาน Really Survival")
+    return embed

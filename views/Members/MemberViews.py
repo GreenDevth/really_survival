@@ -7,7 +7,7 @@ from db.users import Users
 from func.config import get_cooldown_time, steam_check, save_to_db
 from func.member import user_info
 from server.information import reg_success
-from views.Contract.ContractView import ContractButton
+from views.Contract.ContactView import ContractButton
 
 
 class CloseRequestRegister(discord.ui.View):
@@ -117,4 +117,4 @@ class UsersViews(discord.ui.View):
         if retry:
             return await interaction.response.send_message(
                 f'อีก {round(retry, int(get_cooldown_time()))} วินาที คำสั่งถึงจะพร้อมใช้งานอีกครั้ง', ephemeral=True)
-        await interaction.response.send_message(f"{interaction.user.mention} click {button.label}", view=ContractButton(self.bot), ephemeral=True)
+        await interaction.response.send_message(f"{interaction.user.mention} click ที่ปุ่มด้านล่างเพื่อเลือกคำสั่งที่ต้องการ", view=ContractButton(self.bot), ephemeral=True)

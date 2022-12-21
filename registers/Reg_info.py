@@ -44,7 +44,7 @@ class Register_Access(discord.ui.View):
         member = interaction.user
         guild = interaction.guild
         cat_name = "USER PROFILES"
-        room_name = "📝-profile-id-{}".format(member.discriminator)
+        room_name = "📝-ผู้ใช้งาน-id-{}".format(member.discriminator)
         overwrites = {
             guild.default_role: discord.PermissionOverwrite(
                 view_channel=False,

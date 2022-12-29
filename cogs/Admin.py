@@ -88,6 +88,14 @@ class AdminCommand(commands.Cog):
             return await ctx.response.send_message(e, ephemeral=True)
 
 
+    @admin.command(name="ติดตั้งระบบแสดงเนื้อหากิจกรรม", description="คำสั่งติดตั้งแคตตากอรี่และแชลแนลสำหรับแสดงเนื้อหาของอีเว้น")
+    async def event_content(
+            self,
+            ctx:discord.Interaction
+    ):
+        await ctx.response.send_message("ok", ephemeral=True)
+
+
 
 
 def setup(bot):

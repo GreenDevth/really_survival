@@ -41,7 +41,7 @@ class StoryEvent(commands.Cog):
             return await ctx.response.send_message(e, ephemeral=True)
         else:
             if event == choices[int(event_list.index(event))]:
-                channel_name = f"📔-{str(event)}"
+                channel_name = f"📔-{event}"
                 try:
                     cates = discord.utils.get(guild.categories, name=cate)
                     channel = discord.utils.get(guild.channels, name=channel_name)

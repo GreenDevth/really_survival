@@ -1,6 +1,4 @@
-import discord
-import json
-from session.SessionContent import event_001
+from session.SessionContent import *
 
 event_list = [
     "บทที่-1",
@@ -15,7 +13,8 @@ event_list = [
     "บทที่-10"
 ]
 content = [
-    event_001()
+    event_001(),
+    event_002()
 ]
 def event_contents(x):
     index = event_list.index(x)

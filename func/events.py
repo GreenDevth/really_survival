@@ -14,7 +14,8 @@ event_list = [
 ]
 content = [
     event_001(),
-    event_002()
+    event_002(),
+    event_003()
 ]
 def event_contents(x):
     index = event_list.index(x)

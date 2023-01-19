@@ -1,4 +1,5 @@
 import discord
+from discord.utils import get
 from discord.commands import SlashCommandGroup
 from discord.ext import commands
 
@@ -31,18 +32,38 @@ class StoryLauncher(commands.Cog):
             ctx:discord.Interaction
     ):
         guild = ctx.guild
+        cate_name = "THE WALKING DEAD"
+        overwrites = {
+            guild.default_role: discord.PermissionOverwrite(
+                read_messages=True,
+                read_message_history = True,
+                send_messages=False
+            )
+        }
+        await ctx.defer(ephemeral=True, invisible=False)
+        msg = await ctx.followup.send("ระบบกำลังจัดการะบบแสดงเนื้อหา โปรดรอสักครู่")
         try:
-            channel_name = "📚-มินิสตอรี่"
-            channel = discord.utils.get(guild.channels, name=channel_name)
-            if channel:
+            cate = get(guild.categories, name=cate_name)
+            if cate:
                 pass
+            else:
+                cate = await guild.create_category(name=cate_name, overwrites=overwrites)
         except Exception as e:
             print(e)
         else:
-            await channel.purge()
-            await channel.send(embed=intro_story(), view=StoryView(self.bot))
-        finally:
-            return await ctx.response.send_message("ติดตั้งมินิสตอรี่เรียบร้อยแล้ว", ephemeral=True)
+            channel_name = "📚-เนื้อเรื่อง"
+            try:
+                channel = get(guild.channels, name=channel_name)
+                if channel:
+                    pass
+                else:
+                    channel = await guild.create_text_channel(name=channel_name, category=cate)
+            except Exception as e:
+                print(e)
+            else:
+                await channel.purge()
+                await channel.send(embed=intro_story(), view=StoryView(self.bot))
+                await msg.edit(content="จัดการระบบแสดงเนื้อหาสำเร็จ")
 
 
 

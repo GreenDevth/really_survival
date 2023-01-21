@@ -6,6 +6,7 @@ from discord.commands import SlashCommandGroup, Option
 from func.config import update_cooldown, get_cooldown_time
 from scripts.guilds import guild_data, roles_lists
 from db.users import Users
+from db.town import City
 from session.SessionContent import event_001
 
 event_list = [
@@ -74,8 +75,14 @@ class AdminCommand(commands.Cog):
                 Users().drop_table()
                 Users().create_table()
                 return await ctx.response.send_message(f"reset {db_name} successfully...", ephemeral=True)
+            elif db_name == "town":
+                City().drop_table()
+                City().create_table()
+                return await ctx.response.send_message(f"reset {db_name} successfully...", ephemeral=True)
+            else:
+                return await ctx.response.send_message(f"database -> ` {db_name} ` : ไม่มีอยู่ในระบบ", ephemeral=True)
         except Exception as e:
-            await ctx.response.send_message(e, ephemeral=True)
+            return await ctx.response.send_message(e, ephemeral=True)
 
     @admin.command(name="เช็คสิทธิ์ใช้งานเซิร์ฟคงเหลือ", description="ระบบตรวจสอบจำนวนสิทธิ์คงเหลือ")
     async def access_total(self,ctx:discord.Interaction):

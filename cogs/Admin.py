@@ -3,24 +3,12 @@ from discord.utils import get
 from discord.ext import commands
 from discord.commands import SlashCommandGroup, Option
 
-from func.config import update_cooldown, get_cooldown_time
+from func.config import update_cooldown, get_cooldown_time, img_
 from scripts.guilds import guild_data, roles_lists
 from db.users import Users
 from db.town import City
-from session.SessionContent import event_001
+from views.Town.City import CityRegisterButton
 
-event_list = [
-    "บทที่ 1",
-    "บทที่ 2",
-    "บทที่ 3",
-    "บทที่ 4",
-    "บทที่ 5",
-    "บทที่ 6",
-    "บทที่ 7",
-    "บทที่ 8",
-    "บทที่ 9",
-    "บทที่ 10"
-]
 guild_id = guild_data()["roleplay"]
 commands_list = ["ข้อมูลผู้เล่น", "ข้อมูลการเงิน", "ปรับบทบาท"]
 permissions_roles = roles_lists()
@@ -107,55 +95,47 @@ class AdminCommand(commands.Cog):
         except Exception as e:
             return await ctx.response.send_message(e, ephemeral=True)
 
-
-    @admin.command(name="ติดตั้งระบบแสดงเนื้อหากิจกรรม", description="คำสั่งติดตั้งแคตตากอรี่และแชลแนลสำหรับแสดงเนื้อหาของอีเว้น")
-    async def session_content(
+    @admin.command(name="ติดตั้งระบบลงทะเบียนเมือง", description="คำสั่งติดตั้งระบบลงทะเบียนเมือง")
+    async def town_reg(
             self,
-            ctx:discord.Interaction,
-            method:Option(str, "เลือกคำสั่งที่ต้องการ", choices=["install", "uninstall"]),
-            session:Option(str, "เลือกอีเว้นที่ต้องการ", choices=event_list)
+            ctx:discord.Interaction
     ):
         guild = ctx.guild
-        choices = ["install", "uninstall"]
-        if method == choices[0]:
-            cate = "EVENT CONTENT"
-            overwrites = {
-                guild.default_role : discord.PermissionOverwrite(
-                    view_channel=True,
-                    read_messages=True,
-                    read_message_history=True,
-                    send_messages=False
+        await ctx.defer(ephemeral=True, invisible=False)
+        msg = await ctx.followup.send("โปรดรอสักครู่ระบบกำลังติดตั้งปุ่มลงทะเบียนเมืองให้กับคุณ")
+        try:
+            cate_name = "COMMUNITY CITY"
+            channel_name = "📝-จดทะเบียนประชากร"
+            overwrites={
+                guild.default_role:discord.PermissionOverwrite(
+                    send_messages=False,
+                    view_channel=True
                 )
             }
-            try:
-                if discord.utils.get(guild.categories, name=cate):
+            cate = discord.utils.get(guild.categories, name=cate_name)
+            if cate:
+                channel = discord.utils.get(guild.channels, name=channel_name)
+                if channel:
+                    await channel.purge()
                     pass
-                else:
-                    await guild.create_category(name=cate, overwrites=overwrites)
-            except Exception as e:
-                return await ctx.response.send_message(e, ephemeral=True)
             else:
-                if session == event_list[0]:
-                    channel_name = "📔-บทที่-1"
-                    try:
-                        cates = discord.utils.get(guild.categories, name=cate)
-                        channel = discord.utils.get(guild.channels, name=channel_name)
-                        if channel:
-                            await channel.purge()
-                            await channel.send(embed=event_001())
-                        else:
-                            channel = await guild.create_text_channel(name=channel_name, category=cates)
-                            if channel:
-                                await channel.purge()
-                                await channel.send(embed=event_001())
-                                await ctx.response.send_message(f"{session}", ephemeral=True)
-                    except Exception as e:
-                        return await ctx.response.send_message(e, ephemeral=True)
-                    finally:
-                        await ctx.response.send_message(f"จัดการเนื้อหาของ {session} เรียบร้อยแล้ว", ephemeral=True)
+                cate = await guild.create_category(name=cate_name, overwrites=overwrites)
+                channel = await guild.create_text_channel(name=channel_name, category=cate)
 
-        elif method == choices[1]:
-            await ctx.response.send_message(f"{method}", ephemeral=True)
+        except Exception as e:
+            return await msg.edit(content=e)
+        else:
+            embed = discord.Embed(
+                title="📝 ระบบจดทะเบียนพลเมือง",
+                description="ผู้เล่นต้องเลือกเข้าเป็นพลเมืองของ 1 ใน 4 เมือง ซึ่งได้แก่\n"
+                            "- City A คือเมือง Alexandia\n"
+                            "- City B คือเมือง Kingdom\n"
+                            "- City C คือเมือง Seyviours\n"
+                            "- City D คือเมือง TheEmpire"
+            )
+            embed.set_image(url=img_("bran_reg"))
+            await channel.send(embed=embed, view=CityRegisterButton(self.bot))
+            return await msg.edit(content="ติดตั้งระบบเรียบร้อยแล้ว")
 
 
 

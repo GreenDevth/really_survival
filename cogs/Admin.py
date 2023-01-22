@@ -137,8 +137,31 @@ class AdminCommand(commands.Cog):
             await channel.send(embed=embed, view=CityRegisterButton(self.bot))
             return await msg.edit(content="ติดตั้งระบบเรียบร้อยแล้ว")
 
+    @admin.command(name="town",description="เช็คจำนวนเมือง")
+    async def town_count(
+            self,
+            ctx:discord.Interaction,
+            city:Option(str,"ระบุเมืองที่ต้องการเช็ค")
+                         ):
+        await ctx.defer(ephemeral=True, invisible=False)
+        msg = await ctx.followup.send(f"ระบบกำลังตรวจนับจำนวนการลงทะเบียนของเมือง {city}")
+        return await msg.edit(content=City().citizen_count(city))
 
+    @admin.command(name="citizen", description="คำสั่งเช็คสถานะการจดทะเบียนผลเมือง")
+    async def citizen_reg_check(
+            self,
+            ctx:discord.Interaction,
+            member:Option(discord.Member, "ระบบผุ้ใช้งาน")
+    ):
+        await ctx.defer(ephemeral=True, invisible=False)
+        msg = await ctx.followup.send("โปรดรอสักครู่ระบบกำลังทำงาน")
+        try:
+            if City().citizen(member.id) != 0:
+                return await msg.edit(content=ctx.user.mention)
 
-
+        except Exception as e:
+            return await msg.edit(content=e)
+        else:
+            return await msg.edit(content=f"ไม่พบข้อมูลการจดทะเบียนพลเมืองของ {ctx.user.display_name} ในระบบ")
 def setup(bot):
     bot.add_cog(AdminCommand(bot))

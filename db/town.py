@@ -25,13 +25,22 @@ class City:
     def citizen_count(self, city):
         return self.db.fetchone('select count(?) from town',(city,))[0]
 
-    def new_citizen(self, city, discord_id, ign):
-        return self.db.execute('insert into town(city, discord_id, character_name) values (?,?,?)', (city,discord_id, ign,))
+    def new_citizen(self, city, discord_id):
+        return self.db.execute('insert into town(city, discord_id) values (?,?)', (city,discord_id,))
+
+    def update_citizen_boss(self, member):
+        return self.db.execute('update town set boss=1 where discord_id=?',(member,))
+
+    def update_citizen_ign(self, member, ign):
+        return self.db.execute('update town set character_name=? where discord_id=?', (ign, member,))
 
     def boss(self):
         return self.db.fetchone('select discord_id from town where boss=1',())
 
     def citizen(self, member):
+        return self.db.fetchone('select * from town where discord_id=?', (member,))
+
+    def city(self, member):
         return self.db.fetchone('select count(*) from town where discord_id=?', (member,))[0]
 
 

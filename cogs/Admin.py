@@ -156,7 +156,7 @@ class AdminCommand(commands.Cog):
         await ctx.defer(ephemeral=True, invisible=False)
         msg = await ctx.followup.send("โปรดรอสักครู่ระบบกำลังทำงาน")
         try:
-            if City().citizen(member.id) != 0:
+            if City().city(member.id) != 0:
                 return await msg.edit(content=ctx.user.mention)
 
         except Exception as e:

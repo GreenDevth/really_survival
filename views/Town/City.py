@@ -4,6 +4,7 @@ from discord.ext import commands
 from db.town import City
 from db.users import Users
 from func.config import get_cooldown_time, img_
+from views.Town.Func import id_card
 
 
 class CityRegConfirm(discord.ui.View):
@@ -76,18 +77,7 @@ class CityRegisterButton(discord.ui.View):
                 embed.set_image(url=img_(city_name))
                 return await msg.edit(content="",embed=embed,view=CityRegConfirm(self.bot, citizen_info))
             else:
-                city = City().citizen(interaction.user.id)
-                embed = discord.Embed(
-                    title=f"บัตรประจำตัวพลเมือง",
-                    colour=discord.Colour.from_rgb(245, 176, 65)
-                )
-                embed.set_thumbnail(url=interaction.user.display_avatar)
-                embed.add_field(name="ชื่อผู้ใช้งาน", value=interaction.user.display_name)
-                embed.add_field(name="ชื่อตัวละคร", value=city[5])
-                embed.add_field(name="ชื่อเมือง",value=city[1])
-                embed.add_field(name="สถานะพลเมือง", value="เจ้าเมือง" if city[3] == 1 else "ผู้อาศัย", inline=False)
-                embed.set_image(url=img_(city[1]))
-                return await msg.edit(content="",embed=embed)
+                return await msg.edit(content="",embed=id_card(interaction.guild, interaction.user.id))
 
     @discord.ui.button(label="City B", style=discord.ButtonStyle.secondary, emoji="🏠", custom_id="city_b")
     async def city_b(self, button, interaction:discord.Interaction):
@@ -116,18 +106,7 @@ class CityRegisterButton(discord.ui.View):
                 embed.set_image(url=img_(city_name))
                 return await msg.edit(content="", embed=embed, view=CityRegConfirm(self.bot, citizen_info))
             else:
-                city = City().citizen(interaction.user.id)
-                embed = discord.Embed(
-                    title=f"บัตรประจำตัวพลเมือง",
-                    colour=discord.Colour.from_rgb(245, 176, 65)
-                )
-                embed.set_thumbnail(url=interaction.user.display_avatar)
-                embed.add_field(name="ชื่อผู้ใช้งาน", value=interaction.user.display_name)
-                embed.add_field(name="ชื่อตัวละคร", value=city[5])
-                embed.add_field(name="ชื่อเมือง",value=city[1])
-                embed.add_field(name="สถานะพลเมือง", value="เจ้าเมือง" if city[3] == 1 else "ผู้อาศัย", inline=False)
-                embed.set_image(url=img_(city[1]))
-                return await msg.edit(content="", embed=embed)
+                return await msg.edit(content="",embed=id_card(interaction.guild, interaction.user.id))
 
     @discord.ui.button(label="City C", style=discord.ButtonStyle.secondary, emoji="🏠", custom_id="city_c")
     async def city_c(self, button, interaction: discord.Interaction):
@@ -156,18 +135,7 @@ class CityRegisterButton(discord.ui.View):
                 embed.set_image(url=img_(city_name))
                 return await msg.edit(content="", embed=embed, view=CityRegConfirm(self.bot, citizen_info))
             else:
-                city = City().citizen(interaction.user.id)
-                embed = discord.Embed(
-                    title=f"บัตรประจำตัวพลเมือง",
-                    colour=discord.Colour.from_rgb(245, 176, 65)
-                )
-                embed.set_thumbnail(url=interaction.user.display_avatar)
-                embed.add_field(name="ชื่อผู้ใช้งาน", value=interaction.user.display_name)
-                embed.add_field(name="ชื่อตัวละคร", value=city[5])
-                embed.add_field(name="ชื่อเมือง",value=city[1])
-                embed.add_field(name="สถานะพลเมือง", value="เจ้าเมือง" if city[3] == 1 else "ผู้อาศัย", inline=False)
-                embed.set_image(url=img_(city[1]))
-                return await msg.edit(content="", embed=embed)
+                return await msg.edit(content="", embed=id_card(interaction.guild, interaction.user.id))
 
     @discord.ui.button(label="City D", style=discord.ButtonStyle.secondary, emoji="🏠", custom_id="city_d")
     async def city_d(self, button, interaction: discord.Interaction):
@@ -196,15 +164,4 @@ class CityRegisterButton(discord.ui.View):
                 embed.set_image(url=img_(city_name))
                 return await msg.edit(content="", embed=embed, view=CityRegConfirm(self.bot, citizen_info))
             else:
-                city = City().citizen(interaction.user.id)
-                embed = discord.Embed(
-                    title=f"บัตรประจำตัวพลเมือง",
-                    colour=discord.Colour.from_rgb(245, 176, 65)
-                )
-                embed.set_thumbnail(url=interaction.user.display_avatar)
-                embed.add_field(name="ชื่อผู้ใช้งาน", value=interaction.user.display_name)
-                embed.add_field(name="ชื่อตัวละคร", value=city[5])
-                embed.add_field(name="ชื่อเมือง",value=city[1])
-                embed.add_field(name="สถานะพลเมือง", value="เจ้าเมือง" if city[3] == 1 else "ผู้อาศัย", inline=False)
-                embed.set_image(url=img_(city[1]))
-                return await msg.edit(content="", embed=embed)
+                return await msg.edit(content="", embed=id_card(interaction.guild, interaction.user.id))

@@ -35,3 +35,5 @@ class Users:
         return self.db.fetchone('select count(*) from users where discord_id=?',(member,))[0]
     def approved(self, member, number):
         return self.db.execute('update users set verify=? where discord_id=?', (number, member,))
+    def update_city(self, city, member):
+        return self.db.execute('update users set party_name=? where discord_id=?', (city, member))

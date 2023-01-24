@@ -17,7 +17,7 @@ class City:
             discord_id text null,
             boss integer null default 0,
             citizen integer null default 1,
-            character_name text null,
+            character_name text null default 'not set',
             primary key (id autoincrement )
         )'''.format(table_name, )
         return self.db.execute(sql_cmd, ())

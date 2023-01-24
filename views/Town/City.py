@@ -15,12 +15,27 @@ class CityRegConfirm(discord.ui.View):
 
     @discord.ui.button(label="Confirm", style=discord.ButtonStyle.success, custom_id="yes_btn")
     async def yes_btn(self, button, interaction:discord.Interaction):
-        await interaction.response.edit_message(content=f"คุณได้กดปุ่ม {button.label}", view=None)
+        button.disabled=False
+        city_name = self.data[0]
+        try:
+            City().new_citizen(city_name, self.data[1])
+            Users().update_city(city_name, self.data[1])
+        except Exception as e:
+            return await interaction.response.send_message(e, ephemeral=True)
+
+        else:
+
+            embed = discord.Embed(
+                title=f"จดทะเบียนพลเมือง {city_name} สำเร็จ",
+                description=f"ให้พลเมืองของ {city_name} เลือกผู้ปกครอง สำหรับจดทะเบียนหัวหน้าทีม และเตรียมอัพเดทชื่อในเกมส์ของคุณ ในขึ้นตอนต่อไป",
+                colour=discord.Colour.from_rgb(39, 174, 96)
+            )
+            embed.set_image(url=img_(city_name))
+            return await interaction.response.edit_message(content="", embed=embed, view=None)
 
     @discord.ui.button(label="Cancle", style=discord.ButtonStyle.danger, custom_id="no_btn")
     async def no_btn(self, button, interaction:discord.Interaction):
-        city_name = self.data[0]
-        discord_id = self.data[1]
+        button.disabled=False
         embed =discord.Embed(
             title="ยกเลิกการจดทะเบียนเรียบร้อย ✅",
             colour=discord.Colour.from_rgb(244, 208, 63)
@@ -45,6 +60,8 @@ class CityRegisterButton(discord.ui.View):
             return await interaction.response.send_message(
                 f"อีก {round(retry, int(get_cooldown_time()))} วินาที คำสั่งถึงจะพร้อมใช้งานได้อีกครั้ง", ephemeral=True
             )
+        await interaction.response.defer(ephemeral=True, invisible=False)
+        msg = await interaction.followup.send("โปรดรอสักครู่ระบบกำลังประมวลผลข้อมูลให้กับคุณ")
         if Users().check(interaction.user.id) != 0:
             if City().city(interaction.user.id) == 0:
                 citizen_info = [
@@ -56,11 +73,21 @@ class CityRegisterButton(discord.ui.View):
                     title=f"ยืนยันการลงทะเบียนเป็นพลเมืองของ {city_name}",
                     colour=discord.Colour.from_rgb(255, 255, 255)
                 )
-                embed.set_image(url=img_("alexandria"))
-                return await interaction.response.send_message(embed=embed,view=CityRegConfirm(self.bot, citizen_info), ephemeral=True)
+                embed.set_image(url=img_(city_name))
+                return await msg.edit(content="",embed=embed,view=CityRegConfirm(self.bot, citizen_info))
             else:
                 city = City().citizen(interaction.user.id)
-                return await interaction.response.send_message(city, ephemeral=True)
+                embed = discord.Embed(
+                    title=f"บัตรประจำตัวพลเมือง",
+                    colour=discord.Colour.from_rgb(245, 176, 65)
+                )
+                embed.set_thumbnail(url=interaction.user.display_avatar)
+                embed.add_field(name="ชื่อผู้ใช้งาน", value=interaction.user.display_name)
+                embed.add_field(name="ชื่อตัวละคร", value=city[5])
+                embed.add_field(name="ชื่อเมือง",value=city[1])
+                embed.add_field(name="สถานะพลเมือง", value="เจ้าเมือง" if city[3] == 1 else "ผู้อาศัย", inline=False)
+                embed.set_image(url=img_(city[1]))
+                return await msg.edit(content="",embed=embed)
 
     @discord.ui.button(label="City B", style=discord.ButtonStyle.secondary, emoji="🏠", custom_id="city_b")
     async def city_b(self, button, interaction:discord.Interaction):
@@ -73,6 +100,8 @@ class CityRegisterButton(discord.ui.View):
             return await interaction.response.send_message(
                 f"อีก {round(retry, int(get_cooldown_time()))} วินาที คำสั่งถึงจะพร้อมใช้งานได้อีกครั้ง", ephemeral=True
             )
+        await interaction.response.defer(ephemeral=True, invisible=False)
+        msg = await interaction.followup.send("โปรดรอสักครู่ระบบกำลังประมวลผลข้อมูลให้กับคุณ")
         if Users().check(interaction.user.id) != 0:
             if City().city(interaction.user.id) == 0:
                 citizen_info = [
@@ -84,11 +113,21 @@ class CityRegisterButton(discord.ui.View):
                     title=f"ยืนยันการลงทะเบียนเป็นพลเมืองของ {city_name}",
                     colour=discord.Colour.from_rgb(255, 255, 255)
                 )
-                embed.set_image(url=img_("kingdom"))
-                return await interaction.response.send_message(embed=embed, view=CityRegConfirm(self.bot, citizen_info),
-                                                               ephemeral=True)
+                embed.set_image(url=img_(city_name))
+                return await msg.edit(content="", embed=embed, view=CityRegConfirm(self.bot, citizen_info))
             else:
-                return await interaction.response.send_message(interaction.user.mention, ephemeral=True)
+                city = City().citizen(interaction.user.id)
+                embed = discord.Embed(
+                    title=f"บัตรประจำตัวพลเมือง",
+                    colour=discord.Colour.from_rgb(245, 176, 65)
+                )
+                embed.set_thumbnail(url=interaction.user.display_avatar)
+                embed.add_field(name="ชื่อผู้ใช้งาน", value=interaction.user.display_name)
+                embed.add_field(name="ชื่อตัวละคร", value=city[5])
+                embed.add_field(name="ชื่อเมือง",value=city[1])
+                embed.add_field(name="สถานะพลเมือง", value="เจ้าเมือง" if city[3] == 1 else "ผู้อาศัย", inline=False)
+                embed.set_image(url=img_(city[1]))
+                return await msg.edit(content="", embed=embed)
 
     @discord.ui.button(label="City C", style=discord.ButtonStyle.secondary, emoji="🏠", custom_id="city_c")
     async def city_c(self, button, interaction: discord.Interaction):
@@ -101,6 +140,8 @@ class CityRegisterButton(discord.ui.View):
             return await interaction.response.send_message(
                 f"อีก {round(retry, int(get_cooldown_time()))} วินาที คำสั่งถึงจะพร้อมใช้งานได้อีกครั้ง", ephemeral=True
             )
+        await interaction.response.defer(ephemeral=True, invisible=False)
+        msg = await interaction.followup.send("โปรดรอสักครู่ระบบกำลังประมวลผลข้อมูลให้กับคุณ")
         if Users().check(interaction.user.id) != 0:
             if City().city(interaction.user.id) == 0:
                 citizen_info = [
@@ -112,11 +153,21 @@ class CityRegisterButton(discord.ui.View):
                     title=f"ยืนยันการลงทะเบียนเป็นพลเมืองของ {city_name}",
                     colour=discord.Colour.from_rgb(255, 255, 255)
                 )
-                embed.set_image(url=img_("savior"))
-                return await interaction.response.send_message(embed=embed, view=CityRegConfirm(self.bot, citizen_info),
-                                                               ephemeral=True)
+                embed.set_image(url=img_(city_name))
+                return await msg.edit(content="", embed=embed, view=CityRegConfirm(self.bot, citizen_info))
             else:
-                return await interaction.response.send_message(interaction.user.mention, ephemeral=True)
+                city = City().citizen(interaction.user.id)
+                embed = discord.Embed(
+                    title=f"บัตรประจำตัวพลเมือง",
+                    colour=discord.Colour.from_rgb(245, 176, 65)
+                )
+                embed.set_thumbnail(url=interaction.user.display_avatar)
+                embed.add_field(name="ชื่อผู้ใช้งาน", value=interaction.user.display_name)
+                embed.add_field(name="ชื่อตัวละคร", value=city[5])
+                embed.add_field(name="ชื่อเมือง",value=city[1])
+                embed.add_field(name="สถานะพลเมือง", value="เจ้าเมือง" if city[3] == 1 else "ผู้อาศัย", inline=False)
+                embed.set_image(url=img_(city[1]))
+                return await msg.edit(content="", embed=embed)
 
     @discord.ui.button(label="City D", style=discord.ButtonStyle.secondary, emoji="🏠", custom_id="city_d")
     async def city_d(self, button, interaction: discord.Interaction):
@@ -129,6 +180,8 @@ class CityRegisterButton(discord.ui.View):
             return await interaction.response.send_message(
                 f"อีก {round(retry, int(get_cooldown_time()))} วินาที คำสั่งถึงจะพร้อมใช้งานได้อีกครั้ง", ephemeral=True
             )
+        await interaction.response.defer(ephemeral=True, invisible=False)
+        msg = await interaction.followup.send("โปรดรอสักครู่ระบบกำลังประมวลผลข้อมูลให้กับคุณ")
         if Users().check(interaction.user.id) != 0:
             if City().city(interaction.user.id) == 0:
                 citizen_info = [
@@ -140,8 +193,18 @@ class CityRegisterButton(discord.ui.View):
                     title=f"ยืนยันการลงทะเบียนเป็นพลเมืองของ {city_name}",
                     colour=discord.Colour.from_rgb(255, 255, 255)
                 )
-                embed.set_image(url=img_("common"))
-                return await interaction.response.send_message(embed=embed, view=CityRegConfirm(self.bot, citizen_info),
-                                                               ephemeral=True)
+                embed.set_image(url=img_(city_name))
+                return await msg.edit(content="", embed=embed, view=CityRegConfirm(self.bot, citizen_info))
             else:
-                return await interaction.response.send_message(interaction.user.mention, ephemeral=True)
+                city = City().citizen(interaction.user.id)
+                embed = discord.Embed(
+                    title=f"บัตรประจำตัวพลเมือง",
+                    colour=discord.Colour.from_rgb(245, 176, 65)
+                )
+                embed.set_thumbnail(url=interaction.user.display_avatar)
+                embed.add_field(name="ชื่อผู้ใช้งาน", value=interaction.user.display_name)
+                embed.add_field(name="ชื่อตัวละคร", value=city[5])
+                embed.add_field(name="ชื่อเมือง",value=city[1])
+                embed.add_field(name="สถานะพลเมือง", value="เจ้าเมือง" if city[3] == 1 else "ผู้อาศัย", inline=False)
+                embed.set_image(url=img_(city[1]))
+                return await msg.edit(content="", embed=embed)

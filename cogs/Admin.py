@@ -128,10 +128,10 @@ class AdminCommand(commands.Cog):
             embed = discord.Embed(
                 title="📝 ระบบจดทะเบียนพลเมือง",
                 description="ผู้เล่นต้องเลือกเข้าเป็นพลเมืองของ 1 ใน 4 เมือง ซึ่งได้แก่\n"
-                            "- City A คือเมือง Alexandia\n"
+                            "- City A คือเมือง Alexandria\n"
                             "- City B คือเมือง Kingdom\n"
-                            "- City C คือเมือง Seyviours\n"
-                            "- City D คือเมือง TheEmpire"
+                            "- City C คือเมือง Savior\n"
+                            "- City D คือเมือง Commonwealth"
             )
             embed.set_image(url=img_("bran_reg"))
             await channel.send(embed=embed, view=CityRegisterButton(self.bot))

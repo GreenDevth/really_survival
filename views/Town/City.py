@@ -50,7 +50,7 @@ class CityRegisterButton(discord.ui.View):
         self.bot = bot
         self.cooldown = commands.CooldownMapping.from_cooldown(1, int(get_cooldown_time()), commands.BucketType.member)
 
-    @discord.ui.button(label="City A", style=discord.ButtonStyle.secondary, emoji="🏠", custom_id="city_a")
+    @discord.ui.button(label="City A", style=discord.ButtonStyle.secondary, emoji="📝", custom_id="city_a")
     async def city_a(self, button, interaction:discord.Interaction):
         button.disabled=False
         city_name = "Alexandria"
@@ -79,7 +79,7 @@ class CityRegisterButton(discord.ui.View):
             else:
                 return await msg.edit(content="",embed=id_card(interaction.guild, interaction.user.id))
 
-    @discord.ui.button(label="City B", style=discord.ButtonStyle.secondary, emoji="🏠", custom_id="city_b")
+    @discord.ui.button(label="City B", style=discord.ButtonStyle.secondary, emoji="📝", custom_id="city_b")
     async def city_b(self, button, interaction:discord.Interaction):
         button.disabled=False
         city_name = "Kingdom"
@@ -108,7 +108,7 @@ class CityRegisterButton(discord.ui.View):
             else:
                 return await msg.edit(content="",embed=id_card(interaction.guild, interaction.user.id))
 
-    @discord.ui.button(label="City C", style=discord.ButtonStyle.secondary, emoji="🏠", custom_id="city_c")
+    @discord.ui.button(label="City C", style=discord.ButtonStyle.secondary, emoji="📝", custom_id="city_c")
     async def city_c(self, button, interaction: discord.Interaction):
         button.disabled = False
         city_name = "Savior"
@@ -137,7 +137,7 @@ class CityRegisterButton(discord.ui.View):
             else:
                 return await msg.edit(content="", embed=id_card(interaction.guild, interaction.user.id))
 
-    @discord.ui.button(label="City D", style=discord.ButtonStyle.secondary, emoji="🏠", custom_id="city_d")
+    @discord.ui.button(label="City D", style=discord.ButtonStyle.secondary, emoji="📝", custom_id="city_d")
     async def city_d(self, button, interaction: discord.Interaction):
         button.disabled = False
         city_name = "Commonwealth"

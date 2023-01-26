@@ -14,14 +14,14 @@ class Ranking:
         sql_cmd = '''CREATE TABLE IF NOT EXISTS {}(
             id integer not null ,
             discord_id text null,
-            player_rank integer null default 0,
+            player_rank integer null default 1,
             player_exp integer null default 0,
             primary key (id autoincrement )
         )'''.format(table_name, )
         return self.db.execute(sql_cmd, ())
 
     def check(self, member):
-        return self.db.fetchone('select count(*) from rank where discord_id=?',(member,))
+        return self.db.fetchone('select count(*) from rank where discord_id=?',(member,))[0]
 
     def new_rank(self, member):
         return self.db.execute('insert into rank(discord_id) values (?)', (member,))
@@ -31,5 +31,5 @@ class Ranking:
 
     def update_rank(self, member, rank):
         return self.db.execute('update rank set player_rank=? where discord_id=?', (rank, member,))
-    def rank(self, member):
+    def ranking(self, member):
         return self.db.fetchone('select * from rank where discord_id=?', (member,))

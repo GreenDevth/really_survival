@@ -3,12 +3,15 @@ import asyncio
 import discord
 from discord.ext import commands
 
+from db.Ranking import Ranking
+from db.town import City
 from db.users import Users
 from func.config import get_cooldown_time, steam_check, save_to_db
 from func.member import user_info
-from func.rank import ranking_
+from func.rank import ranking_img
 from server.information import reg_success
 from views.Contract.ContactView import ContractButton
+from views.Town.CityRegister import CityRegisterConfirm
 
 
 class CloseRequestRegister(discord.ui.View):
@@ -96,7 +99,10 @@ class UsersViews(discord.ui.View):
 
 
         await interaction.response.defer(ephemeral=True, invisible=False)
-        return await interaction.followup.send(embed=user_info(interaction.user))
+        if City().city(interaction.user.id) == 0:
+            return await interaction.followup.send(embed=user_info(interaction.user), view=CityRegisterConfirm(self.bot))
+        if City().city(interaction.user.id) == 1:
+            return await interaction.followup.send(embed=user_info(interaction.user))
 
     @discord.ui.button(label="กระดานภารกิจ", style=discord.ButtonStyle.secondary, emoji="🎡", custom_id='user_quest')
     async def user_quest(self, button, interaction:discord.Interaction):
@@ -104,15 +110,26 @@ class UsersViews(discord.ui.View):
         interaction.message.author = interaction.user
         bucket = self.cooldown.get_bucket(interaction.message)
         retry = bucket.update_rate_limit()
+
         if retry:
             return await interaction.response.send_message(
                 f'อีก {round(retry, int(get_cooldown_time()))} วินาที คำสั่งถึงจะพร้อมใช้งานอีกครั้ง', ephemeral=True)
-        embed = discord.Embed(
-            title="Ranking information",
-            color=discord.Colour.from_rgb(255, 195, 0)
-        )
-        embed.add_field(name="ผู้ใช้งาน", value=interaction.user.display_name)
-        await interaction.response.send_message(f"{interaction.user.mention} click {button.label}")
+
+        try:
+            if Ranking().check(interaction.user.id) == 0:
+                Ranking().new_rank(interaction.user.id)
+        except Exception as e:
+            print(e)
+        else:
+            rank = Ranking().ranking(interaction.user.id)[2]
+            embed = discord.Embed(
+                title="Ranking information",
+                color=discord.Colour.from_rgb(255, 195, 0)
+            )
+            embed.add_field(name="ผู้ใช้งาน", value=interaction.user.display_name)
+            embed.add_field(name="ค่าประสบการณ์", value=Ranking().ranking(interaction.user.id)[3])
+            embed.set_thumbnail(url=ranking_img(rank))
+            await interaction.response.send_message(embed=embed, ephemeral=True)
 
     @discord.ui.button(label="ติดต่อทีมงาน", style=discord.ButtonStyle.secondary, emoji="☎", custom_id='contact')
     async def contact(self, button, interaction:discord.Interaction):

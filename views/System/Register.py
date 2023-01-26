@@ -4,25 +4,56 @@ import discord
 from discord.ext import commands
 
 from func.config import steam_check, save_to_db
-from server.information import reg_success
+from server.information import reg_success, success_register
 from views.Members.MemberViews import UsersViews
 
 
 class CloseRegisterButton(discord.ui.View):
-    def __init__(self, bot):
+    def __init__(self, bot, steam_id):
         super(CloseRegisterButton, self).__init__(timeout=None)
         self.bot = bot
+        self.steam = steam_id
+    @discord.ui.button(label="กดที่ปุ่ม Close เพื่อโหลดหน้าโปรไฟล์ของคุณ", style=discord.ButtonStyle.secondary, disabled=True, custom_id="confirm_close_reg_label")
+    async def confirm_close_reg_label(self, button, interaction):
+        button.disabled=False
+        await interaction.response.send_message("ok")
 
-    @discord.ui.button(label='Close', style=discord.ButtonStyle.secondary, custom_id="close_reg")
-    async def close_reg(self, button, interaction):
+    @discord.ui.button(label='Close', style=discord.ButtonStyle.danger, custom_id="close_reg")
+    async def close_reg(self, button, interaction:discord.Interaction):
         button.disabled= False
         await interaction.channel.purge()
+        guild = interaction.guild
 
-        img=discord.File('./img/member/member.png')
+        img=discord.File('./img/member/member_profile.png')
         await interaction.channel.send(
             file=img,
             view=UsersViews(self.bot)
         )
+        try:
+            cate_name = "REGISTER REPORT"
+            overwrites = {
+                guild.default_role:discord.PermissionOverwrite(
+                    send_messages=False
+                )
+            }
+
+            cate = discord.utils.get(guild.categories, name=cate_name)
+            if cate:
+                pass
+            else:
+                cate = await guild.create_category(name=cate_name, overwrites=overwrites)
+            channel_name = "📝-รายชื่อผู้ลงทะเบียน"
+            channel = discord.utils.get(guild.channels,name=channel_name)
+            if channel:
+                pass
+            else:
+                channel = await guild.create_text_channel(name=channel_name, category=cate)
+        except Exception as e:
+            print(e)
+        else:
+            add_reaction = await channel.send(embed=success_register(interaction.user,self.steam))
+            await add_reaction.add_reaction("🔐")
+
 class RegisterButton(discord.ui.View):
     def __init__(self, bot):
         super(RegisterButton, self).__init__(timeout=None)
@@ -54,14 +85,17 @@ class RegisterButton(discord.ui.View):
                 steam = await self.bot.wait_for(event="message", check=check, timeout=60)
                 # print(steam.content)
                 if steam_check(steam.content):
+                    steam_id = steam.content
                     await steam.delete()
                     # print("register successfully...")
-                    await qustion.edit(content=None, embed=reg_success(member, steam.content), view=CloseRegisterButton(self.bot))
+                    await qustion.edit(content=None, embed=reg_success(member, steam.content), view=CloseRegisterButton(self.bot, steam_id))
                     return save_to_db(member.id, steam.content)
                     # return await discord.DMChannel.send(member, "")
             except asyncio.TimeoutError:
                 # print("Progress TimeOut!!!!")
-                return await qustion.edit(f"{interaction.user.mention} : คุณใช้เวลาในการกรอกข้อมูลเช้าเกินไป กรุณากดปุ่มเพื่อเริ่มลงทะเบียนใหม่อีกครั้ง")
+                await qustion.edit(f"{interaction.user.mention} : คุณใช้เวลาในการกรอกข้อมูลเช้าเกินไป กรุณากดปุ่มเพื่อเริ่มลงทะเบียนใหม่อีกครั้ง")
+                await asyncio.sleep(5)
+                return await qustion.delete()
             else:
                 await steam.delete()
                 await qustion.edit(content="info not found! Please try agian")

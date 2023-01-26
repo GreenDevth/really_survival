@@ -16,7 +16,7 @@ class Register(commands.Cog):
     async def on_ready(self):
         self.bot.add_view(RegisterVeiw(self.bot))
         self.bot.add_view(RegisterButton(self.bot))
-        self.bot.add_view(CloseRegisterButton(self.bot))
+        self.bot.add_view(CloseRegisterButton(self.bot, steam_id=None))
 
     @commands.command(name="register_setup")
     @commands.is_owner()

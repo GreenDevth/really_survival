@@ -19,6 +19,7 @@ class AdminCommand(commands.Cog):
         self.bot = bot
 
     admin = SlashCommandGroup(guild_ids=[guild_id], name="admin", description="คำสั่งสำหรับแอดมิน")
+    database = SlashCommandGroup(guild_ids=[guild_id], name="database", description="คำสั่งจัดการฐานข้อมูล")
 
     @admin.command(name="จัดการผู้เล่น", description="จัดการผู้เล่นในดิสคอร์ดเซิร์ฟเวอร์")
     async def manage_player(
@@ -54,7 +55,7 @@ class AdminCommand(commands.Cog):
         except Exception as e:
             await ctx.followup.send(e)
 
-    @admin.command(name="จัดการฐานข้อมูล", description="ระบบจัดการฐานข้อมูล")
+    @database.command(name="จัดการฐานข้อมูล", description="ระบบจัดการฐานข้อมูล")
     async def database_manager(
             self,
             ctx:discord.Interaction,

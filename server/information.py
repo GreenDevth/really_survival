@@ -32,7 +32,7 @@ def reg_info():
     return embed
 
 def steam_reg():
-    txt = "Really Survival เป็นเซิร์ฟเวอร์แบบ Private Server" \
+    txt = "Realistic Survival เป็นเซิร์ฟเวอร์แบบ Private Server" \
           " โปรดรอข้อความยืนยันสิทธิ์การเข้าใช้งานจากระบบอีกครั้ง"
     return txt.strip()
 
@@ -48,4 +48,15 @@ def reg_success(member, steam_id):
     embed.add_field(name="สิทธิ์การใช้งาน", value="🟠 รอการอนุมัติ")
     embed.set_thumbnail(url=member.display_avatar)
     # embed.set_image(url=img_('reg_success'))
+    return embed
+
+def success_register(member, steam_id):
+    embed = discord.Embed(
+        title="💾 ลงทะเบียนสำหรับเร็จ 🟢",
+        colour=discord.Colour.from_rgb(46, 197, 19)
+    )
+    embed.add_field(name="ผู้ลงทะเบียน", value=member.display_name)
+    embed.add_field(name="หมายเลขสตรีม", value=steam_id)
+    embed.add_field(name="วันที่ลงทะเบียน", value=current_time("%m-%d-%Y, %H:%M:%S"))
+    embed.set_thumbnail(url=member.display_avatar)
     return embed

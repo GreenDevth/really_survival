@@ -6,7 +6,7 @@ from discord.ext import commands
 from db.users import Users
 from func.config import get_cooldown_time, steam_check, save_to_db
 from func.member import user_info
-from func.img import ranking_
+from func.rank import ranking_
 from server.information import reg_success
 from views.Contract.ContactView import ContractButton
 

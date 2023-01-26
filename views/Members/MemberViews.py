@@ -6,6 +6,7 @@ from discord.ext import commands
 from db.users import Users
 from func.config import get_cooldown_time, steam_check, save_to_db
 from func.member import user_info
+from func.img import ranking_
 from server.information import reg_success
 from views.Contract.ContactView import ContractButton
 
@@ -106,6 +107,11 @@ class UsersViews(discord.ui.View):
         if retry:
             return await interaction.response.send_message(
                 f'อีก {round(retry, int(get_cooldown_time()))} วินาที คำสั่งถึงจะพร้อมใช้งานอีกครั้ง', ephemeral=True)
+        embed = discord.Embed(
+            title="Ranking information",
+            color=discord.Colour.from_rgb(255, 195, 0)
+        )
+        embed.add_field(name="ผู้ใช้งาน", value=interaction.user.display_name)
         await interaction.response.send_message(f"{interaction.user.mention} click {button.label}")
 
     @discord.ui.button(label="ติดต่อทีมงาน", style=discord.ButtonStyle.secondary, emoji="☎", custom_id='contact')

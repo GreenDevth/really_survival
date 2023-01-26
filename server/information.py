@@ -19,8 +19,8 @@ def server_info():
           ""
     return txt.strip()
 def reg_info():
-    txt ="Really Survival เป็นเซิร์ฟเวอร์แบบ Private Server ผู้เล่นทุกคนต้องได้รับการ Verify จากแอดมิน" \
-         " จึงจะสามารถเข้าใช้งานเซิร์ฟเวอร์ได้ รูปแบบเซิร์ฟเป็น PVE และ Mini Story ที่อิงเนื้อหาของซีรี่ The Walking Dead\n" \
+    txt ="Realistic Survival เซิร์ฟเวอร์ที่ผู้เล่นต้องได้รับการ Verify Whitelist จากแอดมินเสียก่อน" \
+         " จึงจะสามารถเข้าใช้งานเซิร์ฟเวอร์ได้ รูปแบบเซิร์ฟเป็น PVE และ Mini Story อ้างอิงเนื้อหาของซีรี่ The Walking Dead\n" \
          "\nอ่านคอนเซ็ปของเซิร์ฟได้ที่\n<#1054650850594795530>\n\n" \
          "**จำนวนสิทธิ์คงเหลือ**\n" \
          f"{int(30) - Users().user_count()[0]} สิทธิ์"

@@ -90,3 +90,18 @@ def server_status():
              f"\n======================================" \
              f"\n14Studio, Copyright © 1983 - 2023```"
     return result.strip()
+
+def update_sys(method):
+    system_file = open('./json_file/sys.json', 'r', encoding='utf-8')
+    json_object = json.load(system_file)
+    system_file.close()
+
+    json_object["system"] = method
+    system_file = open('./json_file/sys.json', 'w', encoding='utf-8')
+    json.dump(json_object, system_file, ensure_ascii=False, indent=4)
+    system_file.close()
+
+def get_system():
+    with open('./json_file/sys.json', 'r', encoding='utf-8') as file:
+        data = json.load(file)
+        return data["system"]

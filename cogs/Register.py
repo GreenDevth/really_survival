@@ -2,7 +2,7 @@ import discord.ui
 from discord.ext import commands
 
 from db.users import Users
-from func.config import get_cooldown_time, database_check, battle_info, server_status
+from func.config import get_cooldown_time, database_check, battle_info, server_status, get_system
 from registers.Reg_info import Register_Access
 from server.information import server_info, reg_info
 from views.System.Register import RegisterButton, CloseRegisterButton
@@ -56,6 +56,10 @@ class RegisterVeiw(discord.ui.View):
 
         if Users().check(interaction.user.id) != 0:
             return await interaction.response.send_message(f"⚠️ {interaction.user.mention} คุณได้สมัครเข้าร่วมโปรเจค The Walking Dead เป็นที่เรียบร้อยแล้ว", ephemeral=True)
+
+        if get_system() == "Close":
+            return await interaction.response.send_message(
+                f"{interaction.user.mention} ยังไม่เปิดให้ลงทะเบียน", ephemeral=True)
 
         await interaction.response.defer(ephemeral=True, invisible=False)
         try:

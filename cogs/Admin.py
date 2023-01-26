@@ -3,7 +3,7 @@ from discord.utils import get
 from discord.ext import commands
 from discord.commands import SlashCommandGroup, Option
 
-from func.config import update_cooldown, get_cooldown_time, img_
+from func.config import update_cooldown, get_cooldown_time, img_, update_sys
 from scripts.guilds import guild_data, roles_lists
 from db.users import Users
 from db.town import City
@@ -163,5 +163,16 @@ class AdminCommand(commands.Cog):
             return await msg.edit(content=e)
         else:
             return await msg.edit(content=f"ไม่พบข้อมูลการจดทะเบียนพลเมืองของ {ctx.user.display_name} ในระบบ")
+
+
+
+    @admin.command(name="ควบคุมระบบลงทะเบียน", description="คำสั่งเปิดหรือปิดระบบลงทะเบียน")
+    async def register_system(self, ctx:discord.Interaction, method:Option(str, 'เลือกคำสั่งที่ต้องการ', choices=["Open", "Close"])):
+        try:
+            update_sys(method)
+        except Exception as e:
+            return await ctx.response.send_message(e, ephemeral=True)
+        else:
+            return await ctx.response.send_message(f"{method} ระบบลงทะเบียนเรียบร้อยแล้ว", ephemeral=True)
 def setup(bot):
     bot.add_cog(AdminCommand(bot))

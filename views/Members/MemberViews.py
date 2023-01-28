@@ -6,7 +6,7 @@ from discord.ext import commands
 from db.Ranking import Ranking
 from db.town import City
 from db.users import Users
-from func.config import get_cooldown_time, steam_check, save_to_db
+from func.config import get_cooldown_time, steam_check, save_to_db, get_quest
 from func.member import user_info
 from func.rank import ranking_img
 from server.information import reg_success
@@ -121,15 +121,18 @@ class UsersViews(discord.ui.View):
         except Exception as e:
             print(e)
         else:
-            rank = Ranking().ranking(interaction.user.id)[2]
-            embed = discord.Embed(
-                title="Ranking information",
-                color=discord.Colour.from_rgb(255, 195, 0)
-            )
-            embed.add_field(name="ผู้ใช้งาน", value=interaction.user.display_name)
-            embed.add_field(name="ค่าประสบการณ์", value=Ranking().ranking(interaction.user.id)[3])
-            embed.set_thumbnail(url=ranking_img(rank))
-            await interaction.response.send_message(embed=embed, ephemeral=True)
+            if get_quest() == "Close":
+                return await interaction.response.send_message("ขออภัยระบบเควสยังไม่เปิดใช้งานในขนะนี้", ephemeral=True)
+            else:
+                rank = Ranking().ranking(interaction.user.id)[2]
+                embed = discord.Embed(
+                    title="Ranking information",
+                    color=discord.Colour.from_rgb(255, 195, 0)
+                )
+                embed.add_field(name="ผู้ใช้งาน", value=interaction.user.display_name)
+                embed.add_field(name="ค่าประสบการณ์", value=Ranking().ranking(interaction.user.id)[3])
+                embed.set_thumbnail(url=ranking_img(rank))
+                return await interaction.response.send_message(embed=embed, ephemeral=True)
 
     @discord.ui.button(label="ติดต่อทีมงาน", style=discord.ButtonStyle.secondary, emoji="☎", custom_id='contact')
     async def contact(self, button, interaction:discord.Interaction):

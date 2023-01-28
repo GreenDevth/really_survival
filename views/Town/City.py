@@ -19,13 +19,18 @@ class CityRegConfirm(discord.ui.View):
     async def yes_btn(self, button, interaction:discord.Interaction):
         button.disabled=False
         city_name = self.data[0]
+        guild = interaction.guild
+        member = interaction.user
         try:
             City().new_citizen(city_name, self.data[1])
             Users().update_city(city_name, self.data[1])
+            role = discord.utils.get(guild.roles, name=city_name)
+
         except Exception as e:
             return await interaction.response.send_message(e, ephemeral=True)
 
         else:
+            await member.add_roles(role)
             return await interaction.response.edit_message(content="",embed=user_info(interaction.user), view=None)
 
     @discord.ui.button(label="ยกเลิก", style=discord.ButtonStyle.danger, custom_id="no_btn")
@@ -55,6 +60,8 @@ class CityRegisterButton(discord.ui.View):
             return await interaction.response.send_message(
                 f"อีก {round(retry, int(get_cooldown_time()))} วินาที คำสั่งถึงจะพร้อมใช้งานได้อีกครั้ง", ephemeral=True
             )
+        if City().citizen_count(city_name) == 1:
+            return await interaction.response.send_message(f"เมือง {city_name} มีผู้เล่นจดทะเบียนครบแล้ว", ephemeral=True)
         if Users().check(interaction.user.id) != 0:
             if City().city(interaction.user.id) == 0:
                 citizen_info = [
@@ -83,6 +90,8 @@ class CityRegisterButton(discord.ui.View):
             return await interaction.response.send_message(
                 f"อีก {round(retry, int(get_cooldown_time()))} วินาที คำสั่งถึงจะพร้อมใช้งานได้อีกครั้ง", ephemeral=True
             )
+        if City().citizen_count(city_name) == 1:
+            return await interaction.response.send_message(f"เมือง {city_name} มีผู้เล่นจดทะเบียนครบแล้ว", ephemeral=True)
         if Users().check(interaction.user.id) != 0:
             if City().city(interaction.user.id) == 0:
                 citizen_info = [
@@ -111,6 +120,8 @@ class CityRegisterButton(discord.ui.View):
             return await interaction.response.send_message(
                 f"อีก {round(retry, int(get_cooldown_time()))} วินาที คำสั่งถึงจะพร้อมใช้งานได้อีกครั้ง", ephemeral=True
             )
+        if City().citizen_count(city_name) == 1:
+            return await interaction.response.send_message(f"เมือง {city_name} มีผู้เล่นจดทะเบียนครบแล้ว", ephemeral=True)
         if Users().check(interaction.user.id) != 0:
             if City().city(interaction.user.id) == 0:
                 citizen_info = [
@@ -138,6 +149,8 @@ class CityRegisterButton(discord.ui.View):
             return await interaction.response.send_message(
                 f"อีก {round(retry, int(get_cooldown_time()))} วินาที คำสั่งถึงจะพร้อมใช้งานได้อีกครั้ง", ephemeral=True
             )
+        if City().citizen_count(city_name) == 1:
+            return await interaction.response.send_message(f"เมือง {city_name} มีผู้เล่นจดทะเบียนครบแล้ว", ephemeral=True)
         if Users().check(interaction.user.id) != 0:
             if City().city(interaction.user.id) == 0:
                 citizen_info = [

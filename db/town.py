@@ -23,7 +23,7 @@ class City:
         return self.db.execute(sql_cmd, ())
 
     def citizen_count(self, city):
-        return self.db.fetchone('select count(?) from town',(city,))[0]
+        return self.db.fetchone('select count(*) from town where city=?',(city,))[0]
 
     def new_citizen(self, city, discord_id):
         return self.db.execute('insert into town(city, discord_id) values (?,?)', (city,discord_id,))

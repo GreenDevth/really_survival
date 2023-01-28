@@ -2,6 +2,7 @@ import discord
 
 from func.config import img_
 
+town_list = ["Alexandria","Kingdom","Savior","Commonwealth"]
 
 def city_embed():
     embed = discord.Embed(
@@ -14,3 +15,5 @@ def city_embed():
     )
     embed.set_image(url=img_("bran_reg"))
     return embed
+
+

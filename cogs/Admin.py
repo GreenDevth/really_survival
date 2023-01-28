@@ -1,15 +1,14 @@
 import discord
-from discord.utils import get
-from discord.ext import commands
 from discord.commands import SlashCommandGroup, Option
+from discord.ext import commands
+from discord.utils import get
 
 from db.Ranking import Ranking
-from func.config import update_cooldown, get_cooldown_time, img_, update_sys
-
-from scripts.guilds import guild_data, roles_lists
-from db.users import Users
 from db.town import City
-from views.Town.City import CityRegisterButton
+from db.users import Users
+from func.city import town_list
+from func.config import update_cooldown, get_cooldown_time, update_sys, update_quest
+from scripts.guilds import guild_data, roles_lists
 
 guild_id = guild_data()["roleplay"]
 commands_list = ["ข้อมูลผู้เล่น", "ข้อมูลการเงิน", "ปรับบทบาท"]
@@ -79,10 +78,6 @@ class AdminCommand(commands.Cog):
         except Exception as e:
             return await ctx.response.send_message(e, ephemeral=True)
 
-    @admin.command(name="เช็คสิทธิ์ใช้งานเซิร์ฟคงเหลือ", description="ระบบตรวจสอบจำนวนสิทธิ์คงเหลือ")
-    async def access_total(self,ctx:discord.Interaction):
-        await ctx.response.send_message(Users().user_count()[0], ephemeral=True)
-
 
     @admin.command(name="ปรับสิทธิ์ใช้งานเซิร์ฟ", description="ระบบปรับสิทธิ์การเข้าใช้งานเซิร์ฟเวอร์")
     async def access_approved(
@@ -102,76 +97,6 @@ class AdminCommand(commands.Cog):
         except Exception as e:
             return await ctx.response.send_message(e, ephemeral=True)
 
-    @admin.command(name="ติดตั้งระบบลงทะเบียนเมือง", description="คำสั่งติดตั้งระบบลงทะเบียนเมือง")
-    async def town_reg(
-            self,
-            ctx:discord.Interaction
-    ):
-        guild = ctx.guild
-        await ctx.defer(ephemeral=True, invisible=False)
-        msg = await ctx.followup.send("โปรดรอสักครู่ระบบกำลังติดตั้งปุ่มลงทะเบียนเมืองให้กับคุณ")
-        try:
-            cate_name = "COMMUNITY CITY"
-            channel_name = "📝-จดทะเบียนประชากร"
-            overwrites={
-                guild.default_role:discord.PermissionOverwrite(
-                    send_messages=False,
-                    view_channel=True
-                )
-            }
-            cate = discord.utils.get(guild.categories, name=cate_name)
-            if cate:
-                channel = discord.utils.get(guild.channels, name=channel_name)
-                if channel:
-                    await channel.purge()
-                    pass
-            else:
-                cate = await guild.create_category(name=cate_name, overwrites=overwrites)
-                channel = await guild.create_text_channel(name=channel_name, category=cate)
-
-        except Exception as e:
-            return await msg.edit(content=e)
-        else:
-            embed = discord.Embed(
-                title="📝 ระบบจดทะเบียนพลเมือง",
-                description="ผู้เล่นต้องเลือกเข้าเป็นพลเมืองของ 1 ใน 4 เมือง ซึ่งได้แก่\n"
-                            "- City A คือเมือง Alexandria\n"
-                            "- City B คือเมือง Kingdom\n"
-                            "- City C คือเมือง Savior\n"
-                            "- City D คือเมือง Commonwealth"
-            )
-            embed.set_image(url=img_("bran_reg"))
-            await channel.send(embed=embed, view=CityRegisterButton(self.bot))
-            return await msg.edit(content="ติดตั้งระบบเรียบร้อยแล้ว")
-
-    @admin.command(name="town",description="เช็คจำนวนเมือง")
-    async def town_count(
-            self,
-            ctx:discord.Interaction,
-            city:Option(str,"ระบุเมืองที่ต้องการเช็ค")
-                         ):
-        await ctx.defer(ephemeral=True, invisible=False)
-        msg = await ctx.followup.send(f"ระบบกำลังตรวจนับจำนวนการลงทะเบียนของเมือง {city}")
-        return await msg.edit(content=City().citizen_count(city))
-
-    @admin.command(name="citizen", description="คำสั่งเช็คสถานะการจดทะเบียนผลเมือง")
-    async def citizen_reg_check(
-            self,
-            ctx:discord.Interaction,
-            member:Option(discord.Member, "ระบบผุ้ใช้งาน")
-    ):
-        await ctx.defer(ephemeral=True, invisible=False)
-        msg = await ctx.followup.send("โปรดรอสักครู่ระบบกำลังทำงาน")
-        try:
-            if City().city(member.id) != 0:
-                return await msg.edit(content=ctx.user.mention)
-
-        except Exception as e:
-            return await msg.edit(content=e)
-        else:
-            return await msg.edit(content=f"ไม่พบข้อมูลการจดทะเบียนพลเมืองของ {ctx.user.display_name} ในระบบ")
-
-
 
     @admin.command(name="ควบคุมระบบลงทะเบียน", description="คำสั่งเปิดหรือปิดระบบลงทะเบียน")
     async def register_system(self, ctx:discord.Interaction, method:Option(str, 'เลือกคำสั่งที่ต้องการ', choices=["Open", "Close"])):
@@ -181,6 +106,32 @@ class AdminCommand(commands.Cog):
             return await ctx.response.send_message(e, ephemeral=True)
         else:
             return await ctx.response.send_message(f"{method} ระบบลงทะเบียนเรียบร้อยแล้ว", ephemeral=True)
+
+    @admin.command(name="ควบคุมระบบเควส", description="คำสั่งเปิดหรือปิดระบบเควส")
+    async def system_quest(self, ctx: discord.Interaction,
+                              method: Option(str, 'เลือกคำสั่งที่ต้องการ', choices=["Open", "Close"])):
+        try:
+            update_quest(method)
+        except Exception as e:
+            return await ctx.response.send_message(e, ephemeral=True)
+        else:
+            return await ctx.response.send_message(f"{method} ระบบลงทะเบียนเรียบร้อยแล้ว", ephemeral=True)
+
+
+    @admin.command(name="town", description="คำสั่งตรวจสอบสิทธิ์ของจำนวนเมืองคงเหลือ")
+    async def limit_town(self, ctx:discord.Interaction, town:Option(str, "เลือกเมืองที่ต้องการตรวจสอบ", choices=town_list)):
+        await ctx.response.defer(ephemeral=True, invisible=False)
+        msg = await ctx.followup.send("โปรดรอสักครู่ระบบกำลังประมาลผลการทำงาน")
+        try:
+            amount = City().citizen_count(town)
+            if amount:
+                pass
+            else:
+                raise Exception("ไม่พบข้อมูลที่ต้องการตรวจสอบ")
+        except Exception as e:
+            return await msg.edit(content=e)
+        else:
+            await msg.edit(content=amount)
 
 def setup(bot):
     bot.add_cog(AdminCommand(bot))

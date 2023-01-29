@@ -10,7 +10,7 @@ from func.city import town_list
 from func.config import update_cooldown, get_cooldown_time, update_sys, update_quest
 from scripts.guilds import guild_data, roles_lists
 
-guild_id = guild_data()["roleplay"]
+guild_id = guild_data()["realistic"]
 commands_list = ["ข้อมูลผู้เล่น", "ข้อมูลการเงิน", "ปรับบทบาท"]
 permissions_roles = roles_lists()
 class AdminCommand(commands.Cog):

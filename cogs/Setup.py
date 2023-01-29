@@ -4,18 +4,35 @@ from discord.ext import commands
 
 from func.city import town_list
 from scripts.guilds import guild_data
+from func.Channels import categories,channels
 
-guild_id = guild_data()["roleplay"]
+guild_id = guild_data()["realistic"]
 
 role_list = ["Alexandria","Kingdom","Savior","Commonwealth"]
 class SystemInstaller(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    installer = SlashCommandGroup(guild_ids=[guild_id], name="installer", description="คำสั่งติดตั้งสำหรับแอดมิน")
+    setup = SlashCommandGroup(guild_ids=[guild_id], name="setup", description="คำสั่งติดตั้งสำหรับแอดมิน")
     uninstaller = SlashCommandGroup(guild_ids=[guild_id], name="uninstaller", description="คำสั่งถอนการติดตั้งสำหรับแอดมิน")
 
-    @installer.command(name="ติดตั้งสิทธิ์การใช้งานดิสคอร์ด", description="คำสั่งติดตั้งระบบ Roles")
+    @uninstaller.command(name="ลบห้องสนทนา", description="คำสั่งลบห้องสนทนา และห้องอื่น ๆ ภายใน Categories ที่ต้องการ")
+    async def uninstall_channel_from_category(self, ctx:discord.Interaction, category:Option(str, "เลือก Category ที่ต้องลบ", choices=categories)):
+        await ctx.response.defer(ephemeral=True, invisible=False)
+        msg = await ctx.followup.send("กรุณารอสักครู่ระบบกำลังประมวลผล")
+        guild = ctx.guild
+        try:
+            cate_name = category
+            category = discord.utils.get(guild.categories, name=cate_name)
+            if category:
+                for channel in category.channels:
+                    await channel.delete()
+        except Exception as e:
+            return await msg.edit(content=e)
+        else:
+            await msg.edit(content=f"ทำการลบห้องภายใน {category} เป็นที่เรียบร้อย")
+
+    @setup.command(name="ติดตั้งสิทธิ์การใช้งานดิสคอร์ด", description="คำสั่งติดตั้งระบบ Roles")
     async def role_installer(
             self,
             ctx:discord.Interaction,
@@ -62,7 +79,7 @@ class SystemInstaller(commands.Cog):
 
         await msg.edit(content="ถอนระบบสิทธิ์การใช้งานดิสคอร์ดของ กลุ่มเมืองเรียบร้อย")
 
-    @installer.command(name="ติดตั้งห้องพูดคุย", description="คำสั่งติดตั้ง Voice Channel สำหรับ กลุ่มเมืองต่าง ๆ")
+    @setup.command(name="ติดตั้งห้องพูดคุย", description="คำสั่งติดตั้ง Voice Channel สำหรับ กลุ่มเมืองต่าง ๆ")
     async def voice_channel_installer(
             self,
             ctx:discord.Interaction,
@@ -150,6 +167,47 @@ class SystemInstaller(commands.Cog):
                     for channel in cate.channels:
                         await channel.delete()
                 return await ctx.followup.send("จัดการลบห้องและปรับสิทธิ์ของห้องเรียบร้อยแล้ว", ephemeral=True)
+
+    @setup.command(name="ติดตั้งห้องทั่วไป", description="คำสั่งติดตั้ง ห้องสนทนา ห้องข้อมูลอื่น ๆ ภายในเซิร์ฟ")
+    async def installer_common_channel(
+            self,
+            ctx:discord.Interaction,
+            channel:Option(str, "เลือก Channel ที่ต้องการ", choices=channels, default=None),
+    ):
+        guild = ctx.guild
+        if channel == channels[5]:
+            try:
+                ch_name = "💬-แชททั่วไป"
+                channel = discord.utils.get(guild.channels, name=ch_name)
+                if channel:
+                    return await ctx.response.send_message(f"พบ {channel.mention} ในระบบอยู่แล้ว", ephemeral=True)
+                    pass
+                else:
+                    overwrites = {
+                        guild.default_role:discord.PermissionOverwrite(read_messages=True, view_channel=True,send_messages=True,read_message_history=True)
+                    }
+                    channel = await guild.create_text_channel(name=ch_name, overwrites=overwrites)
+            except Exception as e:
+                print(e)
+            else:
+                await ctx.response.send_message(f"ติดต้้ง {channel.mention} เรียบร้อย", ephemeral=True)
+        elif channel == channels[4]:
+            try:
+                ch_name = "📰-ข่าวสารจากเซิร์ฟ"
+                channel = discord.utils.get(guild.channels, name=ch_name)
+                if channel:
+                    return await ctx.response.send_message(f"พบ {channel.mention} ในระบบอยู่แล้ว", ephemeral=True)
+                    pass
+                else:
+                    overwrites = {
+                        guild.default_role: discord.PermissionOverwrite(read_messages=True, view_channel=True,
+                                                                        send_messages=True, read_message_history=True)
+                    }
+                    channel = await guild.create_text_channel(name=ch_name, overwrites=overwrites)
+            except Exception as e:
+                print(e)
+            else:
+                await ctx.response.send_message(f"ติดต้้ง {channel.mention} เรียบร้อย", ephemeral=True)
 
 def setup(bot):
     bot.add_cog(SystemInstaller(bot))

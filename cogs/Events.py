@@ -6,7 +6,7 @@ from func.events import event_list, event_contents
 from scripts.guilds import guild_data
 
 
-guild_id = guild_data()["roleplay"]
+guild_id = guild_data()["realistic"]
 
 class StoryEvent(commands.Cog):
     def __init__(self, bot):

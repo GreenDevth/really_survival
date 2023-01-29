@@ -7,7 +7,7 @@ from scripts.guilds import guild_data, roles_lists
 from story.Storied import intro_story
 from story.StoryContent import StoryView
 
-guild_id = guild_data()["roleplay"]
+guild_id = guild_data()["realistic"]
 commands_list = ["ข้อมูลผู้เล่น", "ข้อมูลการเงิน", "ปรับบทบาท"]
 permissions_roles = roles_lists()
 

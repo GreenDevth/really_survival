@@ -2,6 +2,7 @@ import discord
 from discord.commands import SlashCommandGroup, Option
 from discord.ext import commands
 
+from cogs.Register import RegisterVeiw
 from func.city import town_list
 from scripts.guilds import guild_data
 from func.Channels import categories,channels
@@ -208,6 +209,47 @@ class SystemInstaller(commands.Cog):
                 print(e)
             else:
                 await ctx.response.send_message(f"ติดต้้ง {channel.mention} เรียบร้อย", ephemeral=True)
+
+    @setup.command(name="ติดตั้งระบบลงทะเบียน", description="คำสั่งเปิดใช้งานระบบลงทะเบียน")
+    async def system_register_enabled(self, ctx:discord.Interaction, method:Option(str, "เลือกรูปแบบที่ต้องการ", choices=["Install", "Uninstall"])):
+        guild = ctx.guild
+        await ctx.response.defer(ephemeral=True, invisible=False)
+        msg = await ctx.followup.send("โปรดรอสักครู่ระบบกำลังประมวลผลการทำงาน")
+
+        if method == "Install":
+            try:
+                ch_name="📖-ข้อมูลเซิร์ฟเวอร์"
+                channel = discord.utils.get(guild.channels, name=ch_name)
+                if channel:
+                    await channel.purge()
+                else:
+                    channel = await guild.create_text_channel(name=ch_name)
+                    await channel.set_permissions(guild.default_role, send_messages=False, read_messages=True, read_message_history=True, view_channel=True)
+            except Exception as e:
+                return await msg.edit(content=e)
+            else:
+                try:
+                    if channel:
+                        img = discord.File('./img/concept/info.png')
+                        await channel.send(
+                            file=img, view=RegisterVeiw(self.bot)
+                        )
+                except Exception as e:
+                    return await msg.edit(content=e)
+                else:
+                    return await msg.edit(content="ติดตั้งระบบลงทะเบียนเรียบร้อย ✅")
+        else:
+            try:
+                ch_name="📖-ข้อมูลเซิร์ฟเวอร์"
+                channel = discord.utils.get(guild.channels, name=ch_name)
+                if channel:
+                    await channel.purge()
+                else:
+                    return await msg.edit(content=f"ไม่พบห้อง {channel.mention} ในระบบ")
+            except Exception as e:
+                return await msg.edit(content=e)
+
+
 
 def setup(bot):
     bot.add_cog(SystemInstaller(bot))

@@ -54,12 +54,14 @@ class RegisterVeiw(discord.ui.View):
             return await interaction.response.send_message(
                 f'อีก {round(retry, int(get_cooldown_time()))} วินาที คำสั่งถึงจะพร้อมใช้งานอีกครั้ง', ephemeral=True)
 
-        if Users().check(interaction.user.id) != 0:
-            return await interaction.response.send_message(f"⚠️ {interaction.user.mention} คุณได้สมัครเข้าร่วมโปรเจค The Walking Dead เป็นที่เรียบร้อยแล้ว", ephemeral=True)
 
         if get_system() == "Close":
             return await interaction.response.send_message(
                 f"{interaction.user.mention} ยังไม่เปิดให้ลงทะเบียน", ephemeral=True)
+
+        if Users().check(interaction.user.id) != 0:
+            return await interaction.response.send_message(f"⚠️ {interaction.user.mention} คุณได้สมัครเข้าร่วมโปรเจค The Walking Dead เป็นที่เรียบร้อยแล้ว", ephemeral=True)
+
 
         await interaction.response.defer(ephemeral=True, invisible=False)
         try:
@@ -83,6 +85,12 @@ class RegisterVeiw(discord.ui.View):
         if retry:
             return await interaction.response.send_message(
                 f'อีก {round(retry, int(get_cooldown_time()))} วินาที คำสั่งถึงจะพร้อมใช้งานอีกครั้ง', ephemeral=True)
+
+        if get_system() == "Close":
+            return await interaction.response.send_message(
+                f"{interaction.user.mention} เซิร์ฟเวอร์อยู่ระหว่างพัฒนาระบบ", ephemeral=True)
+
+
         await interaction.response.defer(ephemeral=True, invisible=False)
         await interaction.followup.send(server_info())
 
@@ -96,6 +104,10 @@ class RegisterVeiw(discord.ui.View):
         if retry:
             return await interaction.response.send_message(
                 f'อีก {round(retry, int(get_cooldown_time()))} วินาที คำสั่งถึงจะพร้อมใช้งานอีกครั้ง', ephemeral=True)
+
+        if get_system() == "Close":
+            return await interaction.response.send_message(
+                f"{interaction.user.mention} เซิร์ฟเวอร์ยังไม่พร้อมให้บริการ", ephemeral=True)
 
         try:
             await interaction.response.defer(ephemeral=True, invisible=False)

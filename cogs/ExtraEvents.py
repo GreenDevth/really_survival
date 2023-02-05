@@ -1,10 +1,9 @@
 import discord
-from discord.ext import commands
 from discord.commands import SlashCommandGroup, Option
-from func.events import extra_content, extra_list, extra_event_contents
+from discord.ext import commands
 
+from func.events import extra_list, extra_event_contents
 from scripts.guilds import guild_data
-
 
 guild_id = guild_data()["realistic"]
 

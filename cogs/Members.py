@@ -1,9 +1,6 @@
 import discord
-from discord.utils import get
 from discord.ext import commands
-from discord.commands import SlashCommandGroup, Option
-
-
+from discord.utils import get
 
 from scripts.guilds import guild_data
 from views.Members.MemberViews import UsersViews
@@ -20,7 +17,6 @@ class MemberProfile(commands.Cog):
         member = ctx.author
         await ctx.message.delete()
         guild = ctx.guild
-        cat_name = "USER PROFILES"
         room_name = "📝-ผู้ใช้งาน-id-{}".format(member.discriminator)
         try:
             channel = get(guild.channels, name=room_name)
@@ -28,6 +24,24 @@ class MemberProfile(commands.Cog):
                 await channel.purge()
                 img = discord.File('./img/member/member_profile.png')
                 return await channel.send(file=img, view=UsersViews(self.bot))
+        except Exception as e:
+            return await ctx.send(e, delete_after=5)
+        else:
+            return await ctx.send(f"กรุณาพิมพ์คำสั่งของคุณที่ห้อง {channel.mention} เท่านั้น", delete_after=5)
+
+
+
+    @commands.command(name="event")
+    async def i_event(self, ctx):
+        member = ctx.author
+        await ctx.message.delete()
+        guild = ctx.guild
+        room_name = "📝-ผู้ใช้งาน-id-{}".format(member.discriminator)
+
+        try:
+            channel = get(guild.channels, name=room_name)
+            if ctx.channel == channel and member == ctx.author:
+                return await ctx.send("ok", delete_after=5)
         except Exception as e:
             return await ctx.send(e, delete_after=5)
         else:

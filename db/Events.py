@@ -31,3 +31,30 @@ class Event:
 
     def event(self):
         return self.db.fetchall('select * from event order by id', ())
+
+class TeaserEvent:
+    def __init__(self):
+        self.db = Events()
+
+
+
+    def drop_table(self):
+        sql = '''DROP TABLE IF EXISTS {}'''.format("teaser")
+        return self.db.execute(sql, ())
+
+    def create_table(self):
+        sql = '''CREATE TABLE IF NOT EXISTS {}(
+            id integer not null,
+            title text null,
+            image_url text null,
+            status integer default 1,
+            player_id text null,
+            primary key (id autoincrement)
+        )'''.format("teaser")
+        return self.db.execute(sql, ())
+
+    def new(self, title, image):
+        return self.db.execute('insert into teaser(title,image_url) VALUES (?,?)', (title, image,))
+
+
+

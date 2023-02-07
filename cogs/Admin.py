@@ -4,7 +4,7 @@ from discord.ext import commands
 from discord.utils import get
 
 from db.Ranking import Ranking
-from db.Events import Event
+from db.Events import Event, TeaserEvent
 from db.town import City
 from db.users import Users
 from func.city import town_list
@@ -77,6 +77,10 @@ class AdminCommand(commands.Cog):
             elif db_name == "event":
                 Event().drop_table()
                 Event().create_table()
+                return await ctx.response.send_message(f"reset {db_name} successfully...", ephemeral=True)
+            elif db_name == "teaser":
+                TeaserEvent().drop_table()
+                TeaserEvent().create_table()
                 return await ctx.response.send_message(f"reset {db_name} successfully...", ephemeral=True)
             else:
                 return await ctx.response.send_message(f"database -> ` {db_name} ` : ไม่มีอยู่ในระบบ", ephemeral=True)

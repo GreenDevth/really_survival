@@ -25,7 +25,7 @@ class Users:
         return self.db.execute(sql_cmd, ())
 
     def user_count(self):
-        return self.db.fetchone('select count(*) from users order by id',())
+        return self.db.fetchone('select count(*) from users order by id',())[0]
     def new_player(self, member, steam, join_date):
         return self.db.execute('insert into users(discord_id, steam_id, join_date) values (?,?, ?)',(member, steam, join_date,))
 

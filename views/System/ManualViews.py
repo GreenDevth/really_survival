@@ -3,7 +3,7 @@ from discord.ext import pages, commands
 
 from scripts.guilds import Occupation, get_cooldown_time, guild_data
 
-guild_id = guild_data()["roleplay"]
+guild_id = guild_data()["realistic"]
 occ = Occupation()
 
 

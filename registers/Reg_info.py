@@ -7,7 +7,7 @@ from views.System.Register import RegisterButton
 
 def count_access():
     amount = Users().user_count()
-    total  = (30 - int(amount[0]))
+    total  = (30 - int(amount))
     return total
 
 
@@ -58,6 +58,9 @@ class Register_Access(discord.ui.View):
                 return await interaction.response.edit_message(content=e, view=None)
             else:
                 overwrites = {
+                    guild.default_role:discord.PermissionOverwrite(
+                      view_channel=True
+                    ),
                     member: discord.PermissionOverwrite(
                         view_channel=True,
                         read_messages=True,
@@ -66,5 +69,6 @@ class Register_Access(discord.ui.View):
                     )
                 }
                 register_channel = await guild.create_text_channel(name=room_name, category=cate, overwrites=overwrites)
+                await register_channel.edit(sync_permissions=True)
                 await interaction.response.edit_message(content=f"ไปยังห้อง {register_channel.mention} เพื่อเข้าสู่ระบบลงทะเบียน", view=None, embed=None)
                 return await register_channel.send(file=discord.File('./img/concept/steam.png'), view=RegisterButton(self.bot))

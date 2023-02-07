@@ -5,7 +5,8 @@ categories = [
     "EVENT CONTENT",
     "THE WALKING DEAD",
     "REGISTER REPORT",
-    "COMMUNITY TOWN"
+    "COMMUNITY TOWN",
+    "EXTRA EVENT"
 ]
 channels = [
     "🌐-join-server",

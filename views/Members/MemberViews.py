@@ -3,6 +3,7 @@ import asyncio
 import discord
 from discord.ext import commands
 
+from db.Events import TeaserEvent
 from db.Ranking import Ranking
 from db.town import City
 from db.users import Users
@@ -123,6 +124,14 @@ class UsersViews(discord.ui.View):
         else:
             if get_quest() == "Close":
                 return await interaction.response.send_message("ขออภัยระบบเควสยังไม่เปิดใช้งานในขนะนี้", ephemeral=True)
+            elif TeaserEvent().check(interaction.user.id) != 0:
+                data = TeaserEvent().my_teaser(interaction.user.id)
+                embed = discord.Embed(
+                    title=data[1],
+                    colour=discord.Colour.from_rgb(255,154,222)
+                )
+                embed.set_image(url=data[4])
+                return await interaction.response.send_message(f"{interaction.user.mention} คุณมี 1 ภารกิจประจำสัปดาห์นี้", embed=embed, view=GetQuest(self.bot, data), ephemeral=True)
             else:
                 rank = Ranking().ranking(interaction.user.id)[2]
                 embed = discord.Embed(
@@ -144,3 +153,27 @@ class UsersViews(discord.ui.View):
             return await interaction.response.send_message(
                 f'อีก {round(retry, int(get_cooldown_time()))} วินาที คำสั่งถึงจะพร้อมใช้งานอีกครั้ง', ephemeral=True)
         await interaction.response.send_message(f"{interaction.user.mention} click ที่ปุ่มด้านล่างเพื่อเลือกคำสั่งที่ต้องการ", view=ContractButton(self.bot), ephemeral=True)
+
+
+# ระบบกดปุ่มรับภารกิจ
+
+class GetQuest(discord.ui.View):
+    def __init__(self, bot, quest):
+        super(GetQuest, self).__init__(timeout=None)
+        self.bot = bot
+        self.quest = quest
+    @discord.ui.button(label="กดที่ปุ่มเพื่อรับภารกิจประจำสัปดาห์", style=discord.ButtonStyle.secondary, disabled=True, custom_id="get_quest_disabled")
+    async def get_quest_disabled(self, button, interaction:discord.Interaction):
+        button.disabled=False,
+        await interaction.response.send_message(interaction.user.mention, f"click {button.label}")
+    @discord.ui.button(label="กดรับภารกิจของคุณที่นี่", style=discord.ButtonStyle.secondary, emoji="🎲", custom_id="get_quest_button")
+    async def get_quest_button(self, button, interaction:discord.Interaction):
+        button.disabled = False
+        user = interaction.user
+        embed = discord.Embed(
+            title=self.quest[1],
+            colour=discord.Colour.from_rgb(15, 115, 51)
+        )
+        embed.set_image(url=self.quest[4])
+        await interaction.response.edit_message(content=f"{user.mention} ระบบส่งข้อมูลภารกิจไปยัง กล่องข้อความของคุณเรียบร้อย", embed=None, view=None)
+        return await discord.DMChannel.send(user, embed=embed)

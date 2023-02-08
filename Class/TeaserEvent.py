@@ -106,9 +106,10 @@ class GetTeaser(discord.ui.View):
     @discord.ui.button(label="กดที่ปุ่มเพื่อรับภารกิจเริ่มต้นของคุณ", style=discord.ButtonStyle.secondary, disabled=True, custom_id="get_teaser_disabled")
     async def teaser_label(self, button, interaction:discord.Interaction):
         button.disabled=False
+        await interaction.response.send(button.label)
 
 
-    @discord.ui.button(label="รับแผนที่ตำแหน่ง", style=discord.ButtonStyle.secondary, emoji="🎲",custom_id="get_teaser_frist")
+    @discord.ui.button(label="รับแผนที่ตำแหน่ง", style=discord.ButtonStyle.secondary, emoji="🗺",custom_id="get_teaser_frist")
     async def get_teaser_frist(self, button, interaction:discord.Interaction):
         button.disabled=False
         member = interaction.user

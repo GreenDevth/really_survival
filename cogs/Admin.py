@@ -8,7 +8,7 @@ from db.Events import Event, TeaserEvent
 from db.town import City
 from db.users import Users
 from func.city import town_list
-from func.config import update_cooldown, get_cooldown_time, update_sys, update_quest
+from func.config import update_cooldown, get_cooldown_time, update_sys, update_quest, update_teaser
 from scripts.guilds import guild_data, roles_lists
 
 guild_id = guild_data()["realistic"]
@@ -121,6 +121,17 @@ class AdminCommand(commands.Cog):
                               method: Option(str, 'เลือกคำสั่งที่ต้องการ', choices=["Open", "Close"])):
         try:
             update_quest(method)
+        except Exception as e:
+            return await ctx.response.send_message(e, ephemeral=True)
+        else:
+            return await ctx.response.send_message(f"{method} ระบบลงทะเบียนเรียบร้อยแล้ว", ephemeral=True)
+
+
+    @admin.command(name="ควบคุมระบบภารกิจ", description="คำสั่งเปิดหรือปิดระบบภารกิจเริ่มต้น")
+    async def system_update_teaser(self, ctx: discord.Interaction,
+                              method: Option(str, 'เลือกคำสั่งที่ต้องการ', choices=["Open", "Close"])):
+        try:
+            update_teaser(method)
         except Exception as e:
             return await ctx.response.send_message(e, ephemeral=True)
         else:

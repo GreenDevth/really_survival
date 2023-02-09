@@ -50,7 +50,14 @@ class RegisterVeiw(discord.ui.View):
         interaction.message.author = interaction.user
         bucket = self.cooldown.get_bucket(interaction.message)
         retry = bucket.update_rate_limit()
-        print(Users().user_count())
+
+        def user_check():
+            total = Users().user_count()
+            if total > 30:
+                return True
+            elif total < 30:
+                return False
+
         if retry:
             return await interaction.response.send_message(
                 f'อีก {round(retry, int(get_cooldown_time()))} วินาที คำสั่งถึงจะพร้อมใช้งานอีกครั้ง', ephemeral=True)
@@ -60,24 +67,24 @@ class RegisterVeiw(discord.ui.View):
             return await interaction.response.send_message(
                 f"{interaction.user.mention} ยังไม่เปิดให้ลงทะเบียน", ephemeral=True)
 
-        if Users().user_count() == 30:
+        if user_check():
             return await interaction.response.send_message(f"⚠ {interaction.user.mention} ขออภัยขณะนี้สิทธิ์ในการใช้งานเซิร์ฟเวอร์ครบจำนวน {Users().user_count()} แล้ว", ephemeral=True)
 
         if Users().check(interaction.user.id) != 0:
             return await interaction.response.send_message(f"⚠ {interaction.user.mention} คุณได้สมัครเข้าร่วมโปรเจค The Walking Dead เป็นที่เรียบร้อยแล้ว", ephemeral=True)
-
-
-        await interaction.response.defer(ephemeral=True, invisible=False)
-        try:
-            if database_check(r'./db/users.db'):
-                pass
-            else:
-                Users().create_table()
-                print("database has been created.")
-        except Exception as e:
-            print(e)
         else:
-            return await interaction.followup.send(embed=reg_info(),view=Register_Access(self.bot))
+
+            await interaction.response.defer(ephemeral=True, invisible=False)
+            try:
+                if database_check(r'./db/users.db'):
+                    pass
+                else:
+                    Users().create_table()
+                    print("database has been created.")
+            except Exception as e:
+                print(e)
+            else:
+                return await interaction.followup.send(embed=reg_info(),view=Register_Access(self.bot))
 
     @discord.ui.button(label='ข้อมูลเซิร์ฟ', style=discord.ButtonStyle.secondary, emoji="📖",
                        custom_id="setting")

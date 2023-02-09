@@ -47,18 +47,20 @@ class TeaserEvent:
         sql = '''CREATE TABLE IF NOT EXISTS {}(
             id integer not null,
             title text null,
-            image_url text null,
-            status integer default 1,
             secret_code text null,
             player_id text null,
+            image_url text null,
+            location text null,
+            exp integer null default 1000,
+            status integer default 1,
             success integer null default 0,
             primary key (id autoincrement)
         )'''.format("teaser")
         return self.db.execute(sql, ())
 
-    def new(self, title, image, secret_code):
-        return self.db.execute('insert into teaser(title,secret_code,image_url) VALUES (?,?,?)',
-                               (title, secret_code, image,))
+    def new(self, title,secret_code,image, location):
+        return self.db.execute('insert into teaser(title, secret_code, image_url, location) VALUES (?,?,?,?)',
+                               (title, secret_code, image, location,))
 
     def seccess(self, secret_code):
         return self.db.execute('update teaser set success=1 where secret_code=?', (secret_code,))
@@ -83,5 +85,8 @@ class TeaserEvent:
 
     def teaser(self, teaser_id):
         return self.db.fetchone('select * from teaser where id=?', (teaser_id,))
+
+    def event_count(self):
+        return self.db.fetchone('select count(*) from teaser order by id', ())[0]
 
 

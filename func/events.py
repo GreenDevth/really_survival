@@ -1,3 +1,4 @@
+from db.Events import TeaserEvent
 from session.SessionContent import *
 from session.extraContents import *
 
@@ -15,6 +16,7 @@ event_list = [
 ]
 
 extra_list = [
+    "ปฐมบท",
     "อีเว้นเสริม-1",
     "อีเว้นเสริม-2",
     "อีเว้นเสริม-3",
@@ -27,6 +29,7 @@ extra_list = [
     "อีเว้นเสริม-10"
 ]
 extra_content = [
+    extra_000(),
     extra_001()
 ]
 content = [
@@ -60,3 +63,5 @@ def extra_event_contents(x):
             title="ไม่มีข้อมูล"
         )
         return embed
+
+

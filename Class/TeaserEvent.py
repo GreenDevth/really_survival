@@ -1,13 +1,12 @@
 import random
 
 import discord
-from db.Events import TeaserEvent
-from discord.ext import commands
 from discord.commands import SlashCommandGroup, Option
+from discord.ext import commands
 
-from scripts.guilds import guild_data
+from db.Events import TeaserEvent
 from func.config import get_teaser
-from func.Teaser import teaser_list
+from scripts.guilds import guild_data
 
 guild_id = guild_data()["realistic"]
 
@@ -25,12 +24,14 @@ class TeaserEvents(commands.Cog):
             ctx:discord.Interaction,
             title:Option(str,"กำหนดชื่อให้กำเซ็ตเริ่มต้น"),
             secret_code:Option(str,"ใส่รหัสลับของคุณ"),
-            url:Option(str,"ใส่ link รูปภาพแผนที่ของเซ็ตเริ่มต้น")
+            url:Option(str,"ใส่ link รูปภาพแผนที่ของเซ็ตเริ่มต้น"),
+            location:Option(str, "ระบบ Location ให้กับภารกิจ")
             ):
         data = [
             title,
             secret_code,
-            url
+            url,
+            location,
         ]
         await ctx.response.defer(ephemeral=True, invisible=False)
         embed = discord.Embed(
@@ -38,6 +39,7 @@ class TeaserEvents(commands.Cog):
             colour=discord.Colour.from_rgb(240, 96, 19)
         )
         embed.set_image(url=url)
+        embed.set_footer(text=location)
         msg = await ctx.followup.send("โปรดรอสักครู่ระบบกำลังประมวลผลการทำงาน")
 
         await msg.edit(content=None, embed=embed, view=NewTeaser(self.bot, data))
@@ -89,7 +91,7 @@ class NewTeaser(discord.ui.View):
     async def save_to_teaser_db(self, button, interaction:discord.Interaction):
         button.disabled=False
         try:
-            TeaserEvent().new(self.data[0], self.data[1], self.data[2])
+            TeaserEvent().new(self.data[0], self.data[1], self.data[2], self.data[3])
         except Exception as e:
             return await interaction.response.send_message(e)
         else:
@@ -109,15 +111,14 @@ class GetTeaser(discord.ui.View):
         await interaction.response.send(button.label)
 
 
-    @discord.ui.button(label="รับแผนที่ตำแหน่ง", style=discord.ButtonStyle.secondary, emoji="🗺",custom_id="get_teaser_frist")
+    @discord.ui.button(label="รับตำแหน่งแผนที่", style=discord.ButtonStyle.secondary, emoji="🗺",custom_id="get_teaser_frist")
     async def get_teaser_frist(self, button, interaction:discord.Interaction):
         button.disabled=False
         member = interaction.user
-        await interaction.response.defer(ephemeral=True, invisible=False)
-        msg = await interaction.followup.send("ระบบกำลังจับคู่ภารกิจให้กับคุณ ⏳โปรดรอสักครู่")
         teaser_id = list(TeaserEvent().teaser_list())
+        await interaction.response.defer(ephemeral=True, invisible=False)
+        msg = await interaction.followup.send(f"{member.mention} ⏳ โปรดรอสักครู่ ระบบกำลังสุ่มตำแหน่งกล่องให้กับคุณ")
         if len(teaser_id) == 0:
-            await interaction.channel.purge(limit=1)
             return await msg.edit(content="ภารกิจชุดที่ 1 ได้ส่งมอบให้ผู้เล่นหมดแล้ว")
 
 
@@ -139,12 +140,13 @@ class GetTeaser(discord.ui.View):
         # ตรวจสอบว่าผู้เล่นได้กดรับภารกิจไปแล้วหรือยัง
         if TeaserEvent().check(member.id) == 0:
             data = TeaserEvent().teaser(get_item_list())
-            print(data)
             embed = discord.Embed(
                 title=data[1],
                 color=discord.Colour.from_rgb(255,50,66)
             )
             embed.set_image(url=data[4])
-            return await msg.edit(content=f"นี่คือแผนที่ตำแหน่งสินค้าของคุณ", embed=embed)
+            await interaction.channel.purge(limit=1)
+            return await msg.edit(content=f"{member.mention} สามารถ ดู 🗺 ตำแหน่ง 📦 กล่องของคุณ โดยกดที่ปุ่มกระดานภารกิจได้แล้วตอนนี้")
+
 
 

@@ -1,13 +1,15 @@
 import asyncio
+import random
 
 import discord
 from discord.ext import commands
 
+from Class.TeaserEvent import GetTeaser
 from db.Events import TeaserEvent
 from db.Ranking import Ranking
 from db.town import City
 from db.users import Users
-from func.config import get_cooldown_time, steam_check, save_to_db, get_quest
+from func.config import get_cooldown_time, steam_check, save_to_db, get_quest, img_
 from func.member import user_info
 from func.rank import ranking_img
 from server.information import reg_success
@@ -108,6 +110,7 @@ class UsersViews(discord.ui.View):
     @discord.ui.button(label="กระดานภารกิจ", style=discord.ButtonStyle.secondary, emoji="🎡", custom_id='user_quest')
     async def user_quest(self, button, interaction:discord.Interaction):
         button.disabled=False
+        member = interaction.user
         interaction.message.author = interaction.user
         bucket = self.cooldown.get_bucket(interaction.message)
         retry = bucket.update_rate_limit()
@@ -121,27 +124,60 @@ class UsersViews(discord.ui.View):
                 Ranking().new_rank(interaction.user.id)
         except Exception as e:
             print(e)
-        else:
-            if get_quest() == "Close":
-                return await interaction.response.send_message("ขออภัยระบบเควสยังไม่เปิดใช้งานในขนะนี้", ephemeral=True)
-            elif TeaserEvent().check(interaction.user.id) != 0:
-                data = TeaserEvent().my_teaser(interaction.user.id)
-                embed = discord.Embed(
-                    title=data[1],
-                    colour=discord.Colour.from_rgb(255,154,222)
-                )
-                embed.set_image(url=data[4])
-                return await interaction.response.send_message(f"{interaction.user.mention} คุณมี 1 ภารกิจประจำสัปดาห์นี้", embed=embed, view=GetQuest(self.bot, data), ephemeral=True)
+
+        if get_quest() == "Close":
+            return await interaction.response.send_message("ขออภัยระบบเควสยังไม่เปิดใช้งานในขนะนี้", ephemeral=True)
+
+
+        if TeaserEvent().event_count() == 0:
+            rank = Ranking().ranking(interaction.user.id)[2]
+            embed = discord.Embed(
+                title="Ranking information",
+                color=discord.Colour.from_rgb(255, 195, 0)
+            )
+            embed.add_field(name="ผู้ใช้งาน", value=interaction.user.display_name)
+            embed.add_field(name="ค่าประสบการณ์", value=Ranking().ranking(interaction.user.id)[3])
+            embed.set_thumbnail(url=ranking_img(rank))
+            embed.set_image(url=img_("rank_embed"))
+            return await interaction.response.send_message(embed=embed, ephemeral=True)
+
+        if TeaserEvent().event_count() != 0: # หากระบบมีการอัพเดท Event เข้ามา ให้ทำการเช็ค ภารกิจของผู้เล่นอีกครั้ง
+            # check ผู้เล่นว่ากดรับภารกิจไปแล้วหรือยัง
+            if TeaserEvent().check(interaction.user.id) != 0: # แสดงผล หาก ผู้เล่นมีภารกิจคงค้างอยู่
+                if TeaserEvent().my_teaser(interaction.user.id)[8] == 0:
+                    data = TeaserEvent().my_teaser(interaction.user.id)
+                    embed = discord.Embed(
+                        title=f"ชื่อภารกิจ : {data[1]}",
+                        description=f"เมื่อทำภารกิจสำเร็จ ผู้เล่นจะได้รับ exp หรือค่าประสบการณ์จำนวน {data[6]}exp โดยนำรหัสลับ (secret code) มากรอกให้กับระบบ",
+                        colour=discord.Colour.from_rgb(245, 176, 65)
+                    )
+                    embed.set_image(url=data[4])
+                    embed.set_footer(text=f"คำใบ้ : {data[5]}")
+                    return await interaction.response.send_message(f"{interaction.user.mention} คุณมี 1 ภารกิจประจำสัปดาห์นี้", embed=embed,view=SecretCode(self.bot))
+                else:
+                    rank = Ranking().ranking(interaction.user.id)[2]
+                    embed = discord.Embed(
+                        title="Ranking information",
+                        color=discord.Colour.from_rgb(255, 195, 0)
+                    )
+                    embed.add_field(name="ผู้ใช้งาน", value=interaction.user.display_name)
+                    embed.add_field(name="ค่าประสบการณ์", value=Ranking().ranking(interaction.user.id)[3])
+                    embed.set_thumbnail(url=ranking_img(rank))
+                    embed.set_image(url=img_("rank_embed"))
+                    return await interaction.response.send_message(embed=embed, ephemeral=True)
+
+
+
+
+
             else:
-                rank = Ranking().ranking(interaction.user.id)[2]
-                embed = discord.Embed(
-                    title="Ranking information",
-                    color=discord.Colour.from_rgb(255, 195, 0)
-                )
-                embed.add_field(name="ผู้ใช้งาน", value=interaction.user.display_name)
-                embed.add_field(name="ค่าประสบการณ์", value=Ranking().ranking(interaction.user.id)[3])
-                embed.set_thumbnail(url=ranking_img(rank))
-                return await interaction.response.send_message(embed=embed, ephemeral=True)
+                if TeaserEvent().check(member.id) == 0:
+                    img = discord.File('./img/event/startpack.png')
+                    return await interaction.response.send_message(file=img, view=GetTeaser(self.bot))
+
+
+
+
 
     @discord.ui.button(label="ติดต่อทีมงาน", style=discord.ButtonStyle.secondary, emoji="☎", custom_id='contact')
     async def contact(self, button, interaction:discord.Interaction):
@@ -177,3 +213,53 @@ class GetQuest(discord.ui.View):
         embed.set_image(url=self.quest[4])
         await interaction.response.edit_message(content=f"{user.mention} ระบบส่งข้อมูลภารกิจไปยัง กล่องข้อความของคุณเรียบร้อย", embed=None, view=None)
         return await discord.DMChannel.send(user, embed=embed)
+
+
+class SecretCode(discord.ui.View):
+    def __init__(self, bot):
+        super(SecretCode, self).__init__(timeout=None)
+        self.bot = bot
+
+
+    @discord.ui.button(label="กดที่ปุ่ม เพื่อกรอกรหัสลับที่ได้จากกล่อง", style=discord.ButtonStyle.secondary, disabled=True, custom_id="disable_code_lock")
+    async def disable_code_lock(self, button, interaction:discord.Interaction):
+        button.disabled=False
+        await interaction.response.send_message(button.label)
+    @discord.ui.button(label="กดเพื่อกรอกรหัสลับ", style=discord.ButtonStyle.secondary, emoji="📝", custom_id="enter_code_lock")
+    async def enter_code_lock(self, button, interaction:discord.Interaction):
+        member = interaction.user
+        await interaction.response.defer(ephemeral=True, invisible=False)
+        await interaction.channel.purge(limit=1)
+        msg = await interaction.followup.send("📝 กรุณาพิมพ์รหัสลับที่ได้จากกล่อง")
+        button.disabled=True
+
+        def check(res):
+            return res.author == interaction.user and res.channel == interaction.channel
+        while True:
+            try:
+
+                message = await self.bot.wait_for(event="message", check=check, timeout=60)
+                teaser = TeaserEvent().my_teaser(interaction.user.id)[0]
+                exp = TeaserEvent().my_teaser(member.id)[6]
+                secret = TeaserEvent().get(teaser)[2]
+                await message.delete()
+                if message.content == secret:
+                    try:
+                        TeaserEvent().seccess(secret)
+                        Ranking().update_exp(member.id, exp)
+                    except Exception as e:
+                        print(e)
+                    else:
+
+                        return await msg.edit(content=f"🎊 ยินดีด้วยคุณได้รับ {TeaserEvent().my_teaser(interaction.user.id)[6]} EXP สำหรับภารกิจนี้")
+                else:
+                    print(message.content, secret)
+                    text = [
+                        "คุณกรอกข้อมูลไม่ถูกต้องกรุณาลองใหม่อีกครั้ง",
+                        "ข้อมูลไม่ถูกต้อง ลองใหม่อีกครั้ง",
+                        "ข้อมูลที่คุณกรอกยังไม่ถูกต้อง ลองใหม่อีกครั้ง"
+                    ]
+                    await msg.edit(content=random.choice(text))
+            except asyncio.TimeoutError:
+                return await msg.edit(content="โปรดกรอกรหัสลับภายในระยะเวลา 1 นาที")
+

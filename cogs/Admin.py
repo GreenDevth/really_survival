@@ -153,5 +153,11 @@ class AdminCommand(commands.Cog):
         else:
             await msg.edit(content=amount)
 
+
+    @admin.command(name="ตรวจสอบจำนวนผู้ลงทะเบียน", description="คำสั่งตรวจสอบจำนวนผู้เล่นที่ลงทะเบียนไว้")
+    async def player_count_check(self, ctx:discord.Interaction):
+        total = Users().user_count()
+        await ctx.response.send_message(total, ephemeral=True)
+
 def setup(bot):
     bot.add_cog(AdminCommand(bot))

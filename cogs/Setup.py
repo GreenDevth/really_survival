@@ -9,7 +9,7 @@ from func.Channels import categories,channels
 
 guild_id = guild_data()["realistic"]
 
-role_list = ["Alexandria","Kingdom","Savior","Commonwealth"]
+role_list = ["Alexandria","Kingdom","Savior","Commonwealth","Hilltop"]
 class SystemInstaller(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -54,6 +54,9 @@ class SystemInstaller(commands.Cog):
                 return colour
             if r == role_list[3]:
                 colour = discord.Colour.from_rgb(125, 60, 152)
+                return colour
+            if r == role_list[4]:
+                colour = discord.Colour.from_rgb(242, 9, 119)
                 return colour
         for x in role_list:
             role = discord.utils.get(guild.roles, name=x)

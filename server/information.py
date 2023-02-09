@@ -18,8 +18,8 @@ def server_info():
           ""
     return txt.strip()
 def reg_info():
-    txt ="Realistic Survival เซิร์ฟเวอร์ที่ผู้เล่นต้องได้รับการ Verify Whitelist จากแอดมินเสียก่อน" \
-         " จึงจะสามารถเข้าใช้งานเซิร์ฟเวอร์ได้ รูปแบบเซิร์ฟเป็น PVE และ Mini Story อ้างอิงเนื้อหาของซีรี่ The Walking Dead\n" \
+    txt ="Realistic Survival เซิร์ฟเวอร์ที่ผู้เล่นต้องชำระค่าบริการ Slot สำหรับเข้าเซิร์ฟ" \
+         " จึงจะสามารถเข้าใช้งานเซิร์ฟเวอร์ได้ รูปแบบเซิร์ฟเป็น PVE และ Mini Story อ้างอิงเนื้อหาของซีรี่ The Walking Dead\n\n" \
          "**จำนวนสิทธิ์คงเหลือ**\n" \
          f"{int(30) - Users().user_count()} สิทธิ์"
     embed=discord.Embed(
@@ -27,6 +27,7 @@ def reg_info():
         description=txt,
     )
     embed.set_image(url=img_('reg'))
+    embed.add_field(name="ค่าบริการ", value="100.-")
     return embed
 
 def steam_reg():

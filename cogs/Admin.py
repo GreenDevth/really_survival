@@ -7,7 +7,7 @@ from db.Ranking import Ranking
 from db.Events import Event, TeaserEvent
 from db.town import City
 from db.users import Users
-from func.city import town_list
+from func.city import town_list, city_list
 from func.config import update_cooldown, get_cooldown_time, update_sys, update_quest, update_teaser
 from scripts.guilds import guild_data, roles_lists
 
@@ -158,6 +158,61 @@ class AdminCommand(commands.Cog):
     async def player_count_check(self, ctx:discord.Interaction):
         total = Users().user_count()
         await ctx.response.send_message(total, ephemeral=True)
+
+    @admin.command(name="เปลี่ยนเมืองให้ผู้เล่น", description="คำสั่งย้ายเมืองให้กับผู้เล่น")
+    async def change_city_to_player(
+            self,
+            ctx:discord.Interaction,
+            member:Option(discord.Member, "เลือกผู้เล่นที่ต้องการเปลี่ยนเมือง"),
+            city:Option(str, "เลือกเมืองที่ต้องการเปลี่ยน",choices=city_list)
+    ):
+        await ctx.response.defer(ephemeral=True, invisible=False)
+        msg = await ctx.followup.send('ระบบกำลังประมวลผลการทำงานโปรดรอสักครู่')
+
+        try:
+            City().change_city(member.id, city)
+            Users().update_city(city, member.id)
+        except Exception as e:
+            print(e)
+        else:
+            await msg.edit(content=f"ระบบทำการเปลี่ยนเมืองให้กับ {member.display_name} เรียบร้อย")
+
+
+    @admin.command(name="เช็คข้อมูลผู้ใช้งาน", description="คำสั่งเช็คข้อมูลของผู้เล่น")
+    async def check_all_info_player(
+            self,
+            ctx:discord.Interaction,
+            member:Option(discord.Member, "เลือกผู้ใช้งาน")
+
+    ):
+        try:
+            data = City().citizen(member.id)
+        except Exception as e:
+            print(e)
+        else:
+            await ctx.response.send_message(data, ephemeral=True)
+
+    @admin.command(name="อัพเดทข้อมูลการลงทะเบียนเมือง", description="เช็คข้อมูลของเมืองและจำนวนการลงทะเบียน")
+    async def all_city_info(self, ctx:discord.Interaction):
+        try:
+            data = City().citys()
+            city_1 = City().citizen_count(city_list[0])
+            city_2 = City().citizen_count(city_list[1])
+            city_3 = City().citizen_count(city_list[2])
+            city_4 = City().citizen_count(city_list[3])
+        except Exception as e:
+            print(e)
+        else:
+            embed=discord.Embed(
+                title="ข้อมูลเมืองและจำนวนพลเมือง"
+            )
+            embed.add_field(name=city_list[0], value=f"```จำนวนพลเมืองขณะนี้  {city_1}```", inline=False)
+            embed.add_field(name=city_list[1], value=f"```จำนวนพลเมืองขณะนี้  {city_2}```", inline=False)
+            embed.add_field(name=city_list[2], value=f"```จำนวนพลเมืองขณะนี้  {city_3}```", inline=False)
+            embed.add_field(name=city_list[3], value=f"```จำนวนพลเมืองขณะนี้  {city_4}```", inline=False)
+
+            await ctx.response.send_message(embed=embed, ephemeral=True)
+
 
 def setup(bot):
     bot.add_cog(AdminCommand(bot))

@@ -43,5 +43,11 @@ class City:
     def city(self, member):
         return self.db.fetchone('select count(*) from town where discord_id=?', (member,))[0]
 
+    def change_city(self, member, name):
+        return self.db.execute('update town set city=? where discord_id=?',(name, member))
+
+    def citys(self):
+        return self.db.fetchall('select * from town order by id',())
+
 
 

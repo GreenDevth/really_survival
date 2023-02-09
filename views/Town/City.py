@@ -49,7 +49,7 @@ class CityRegisterButton(discord.ui.View):
         self.bot = bot
         self.cooldown = commands.CooldownMapping.from_cooldown(1, int(get_cooldown_time()), commands.BucketType.member)
 
-    @discord.ui.button(label="Town A", style=discord.ButtonStyle.secondary, emoji="📝", custom_id="city_a")
+    @discord.ui.button(label="A", style=discord.ButtonStyle.secondary, emoji="📝", custom_id="city_a")
     async def city_a(self, button, interaction:discord.Interaction):
         button.disabled=False
         city_name = "Alexandria"
@@ -60,7 +60,7 @@ class CityRegisterButton(discord.ui.View):
             return await interaction.response.send_message(
                 f"อีก {round(retry, int(get_cooldown_time()))} วินาที คำสั่งถึงจะพร้อมใช้งานได้อีกครั้ง", ephemeral=True
             )
-        if City().citizen_count(city_name) == 1:
+        if City().citizen_count(city_name) == 7:
             return await interaction.response.send_message(f"เมือง {city_name} มีผู้เล่นจดทะเบียนครบแล้ว", ephemeral=True)
         if Users().check(interaction.user.id) != 0:
             if City().city(interaction.user.id) == 0:
@@ -79,7 +79,7 @@ class CityRegisterButton(discord.ui.View):
             else:
                 return await interaction.response.send_message(embed=id_card(interaction.guild, interaction.user.id))
 
-    @discord.ui.button(label="Town B", style=discord.ButtonStyle.secondary, emoji="📝", custom_id="city_b")
+    @discord.ui.button(label="B", style=discord.ButtonStyle.secondary, emoji="📝", custom_id="city_b")
     async def city_b(self, button, interaction:discord.Interaction):
         button.disabled=False
         city_name = "Kingdom"
@@ -90,7 +90,7 @@ class CityRegisterButton(discord.ui.View):
             return await interaction.response.send_message(
                 f"อีก {round(retry, int(get_cooldown_time()))} วินาที คำสั่งถึงจะพร้อมใช้งานได้อีกครั้ง", ephemeral=True
             )
-        if City().citizen_count(city_name) == 1:
+        if City().citizen_count(city_name) == 7:
             return await interaction.response.send_message(f"เมือง {city_name} มีผู้เล่นจดทะเบียนครบแล้ว", ephemeral=True)
         if Users().check(interaction.user.id) != 0:
             if City().city(interaction.user.id) == 0:
@@ -109,7 +109,7 @@ class CityRegisterButton(discord.ui.View):
             else:
                 return await interaction.response.send_message(embed=id_card(interaction.guild, interaction.user.id))
 
-    @discord.ui.button(label="Town C", style=discord.ButtonStyle.secondary, emoji="📝", custom_id="city_c")
+    @discord.ui.button(label="C", style=discord.ButtonStyle.secondary, emoji="📝", custom_id="city_c")
     async def city_c(self, button, interaction: discord.Interaction):
         button.disabled = False
         city_name = "Savior"
@@ -120,7 +120,7 @@ class CityRegisterButton(discord.ui.View):
             return await interaction.response.send_message(
                 f"อีก {round(retry, int(get_cooldown_time()))} วินาที คำสั่งถึงจะพร้อมใช้งานได้อีกครั้ง", ephemeral=True
             )
-        if City().citizen_count(city_name) == 1:
+        if City().citizen_count(city_name) == 7:
             return await interaction.response.send_message(f"เมือง {city_name} มีผู้เล่นจดทะเบียนครบแล้ว", ephemeral=True)
         if Users().check(interaction.user.id) != 0:
             if City().city(interaction.user.id) == 0:
@@ -138,7 +138,7 @@ class CityRegisterButton(discord.ui.View):
             else:
                 return await interaction.response.send_message(embed=id_card(interaction.guild, interaction.user.id))
 
-    @discord.ui.button(label="Town D", style=discord.ButtonStyle.secondary, emoji="📝", custom_id="city_d")
+    @discord.ui.button(label="D", style=discord.ButtonStyle.secondary, emoji="📝", custom_id="city_d")
     async def city_d(self, button, interaction: discord.Interaction):
         button.disabled = False
         city_name = "Commonwealth"
@@ -149,8 +149,39 @@ class CityRegisterButton(discord.ui.View):
             return await interaction.response.send_message(
                 f"อีก {round(retry, int(get_cooldown_time()))} วินาที คำสั่งถึงจะพร้อมใช้งานได้อีกครั้ง", ephemeral=True
             )
-        if City().citizen_count(city_name) == 1:
+        if City().citizen_count(city_name) == 7:
             return await interaction.response.send_message(f"เมือง {city_name} มีผู้เล่นจดทะเบียนครบแล้ว", ephemeral=True)
+        if Users().check(interaction.user.id) != 0:
+            if City().city(interaction.user.id) == 0:
+                citizen_info = [
+                    city_name,
+                    interaction.user.id,
+
+                ]
+                embed = discord.Embed(
+                    title=f"ยืนยันการลงทะเบียนเป็นพลเมืองของ {city_name}",
+                    colour=discord.Colour.from_rgb(255, 255, 255)
+                )
+                embed.set_image(url=img_(city_name))
+                return await interaction.response.edit_message(content="", embed=embed,
+                                                               view=CityRegConfirm(self.bot, citizen_info))
+            else:
+                return await interaction.response.send_message(embed=id_card(interaction.guild, interaction.user.id))
+
+    @discord.ui.button(label="E", style=discord.ButtonStyle.secondary, emoji="📝", custom_id="city_e")
+    async def city_e(self, button, interaction: discord.Interaction):
+        button.disabled = False
+        city_name = "Hilltop"
+        interaction.message.author = interaction.user
+        bucket = self.cooldown.get_bucket(interaction.message)
+        retry = bucket.update_rate_limit()
+        if retry:
+            return await interaction.response.send_message(
+                f"อีก {round(retry, int(get_cooldown_time()))} วินาที คำสั่งถึงจะพร้อมใช้งานได้อีกครั้ง", ephemeral=True
+            )
+        if City().citizen_count(city_name) == 7:
+            return await interaction.response.send_message(f"เมือง {city_name} มีผู้เล่นจดทะเบียนครบแล้ว",
+                                                           ephemeral=True)
         if Users().check(interaction.user.id) != 0:
             if City().city(interaction.user.id) == 0:
                 citizen_info = [

@@ -51,6 +51,9 @@ class ContractButton(discord.ui.View):
                     )
                 }
             contact_channel = await guild.create_text_channel(name=channel_name, category=cate, overwrites=overwrites)
+            await contact_channel.edit(sync_permissions=True, )
+            await contact_channel.set_permissions(member, view_channel=True, send_messages=True,
+                                                   read_message_history=True, read_messages=True)
             await interaction.response.edit_message(content=f"ไปยังห้อง {contact_channel.mention} เพื่อแจ้งปัญหา หรือติดต่อทีมงาน", view=None)
             return await contact_channel.send(f"{member.mention}",embed=ticket_open(), view=ContactCloseButton(self.bot))
     @discord.ui.button(label="สนับสนุนเซิร์ฟ", style=discord.ButtonStyle.secondary, emoji="💳", custom_id="support_server")

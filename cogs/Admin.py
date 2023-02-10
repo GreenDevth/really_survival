@@ -14,6 +14,8 @@ from scripts.guilds import guild_data, roles_lists
 guild_id = guild_data()["realistic"]
 commands_list = ["ข้อมูลผู้เล่น", "ข้อมูลการเงิน", "ปรับบทบาท"]
 permissions_roles = roles_lists()
+
+
 class AdminCommand(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -24,10 +26,10 @@ class AdminCommand(commands.Cog):
     @admin.command(name="จัดการผู้เล่น", description="จัดการผู้เล่นในดิสคอร์ดเซิร์ฟเวอร์")
     async def manage_player(
             self,
-            ctx:discord.Interaction,
-            member:Option(discord.Member, "เลือกผู้เล่น"),
-            command:Option(str,"เลือกคำสั่งที่ต้องการ", choices=commands_list),
-            roles :Option(default=None, choices=permissions_roles)
+            ctx: discord.Interaction,
+            member: Option(discord.Member, "เลือกผู้เล่น"),
+            command: Option(str, "เลือกคำสั่งที่ต้องการ", choices=commands_list),
+            roles: Option(default=None, choices=permissions_roles)
 
     ):
         guild = ctx.guild
@@ -36,7 +38,7 @@ class AdminCommand(commands.Cog):
         msg = await ctx.followup.send(f"โปรดรอสักครู่ ระบบกำลังดำเนินการจัดการ {command} ให้กับ {member.mention}")
         if command == commands_list[2]:
             try:
-                role = get(guild.roles,name=roles)
+                role = get(guild.roles, name=roles)
                 if role:
                     await member.add_roles(role)
             except Exception as e:
@@ -46,8 +48,8 @@ class AdminCommand(commands.Cog):
     @admin.command(name="จัดการคลูดาวน์ของปุ่มกด", description="คำสั่งสำหรับปรับแก้จำนวนเวลา cooldown ของปุ่มกด")
     async def manage_cooldown(
             self,
-            ctx:discord.Interaction,
-            amount:Option(int, "ระบุจำนวนเวลาให้กับระบบ คิดเป็น วินาที")):
+            ctx: discord.Interaction,
+            amount: Option(int, "ระบุจำนวนเวลาให้กับระบบ คิดเป็น วินาที")):
         await ctx.response.defer(ephemeral=True, invisible=False)
         try:
             update_cooldown(amount)
@@ -58,8 +60,8 @@ class AdminCommand(commands.Cog):
     @database.command(name="จัดการฐานข้อมูล", description="ระบบจัดการฐานข้อมูล")
     async def database_manager(
             self,
-            ctx:discord.Interaction,
-            db_name:Option(str, "ระบบชื่อฐานข้อมูล")
+            ctx: discord.Interaction,
+            db_name: Option(str, "ระบบชื่อฐานข้อมูล")
     ):
         try:
             if db_name == "users":
@@ -87,28 +89,29 @@ class AdminCommand(commands.Cog):
         except Exception as e:
             return await ctx.response.send_message(e, ephemeral=True)
 
-
     @admin.command(name="ปรับสิทธิ์ใช้งานเซิร์ฟ", description="ระบบปรับสิทธิ์การเข้าใช้งานเซิร์ฟเวอร์")
     async def access_approved(
             self,
-            ctx:discord.Interaction,
-            choise:Option(str, "เลือกคำสั่งที่ต้องการ", choices=["ถอนสิทธิ์", "ให้สิทธิ์"]),
-            member:Option(discord.Member, "เลือกผู้เล่นที่ต้องการปรับสิทธิ์เข้าใช้งานเซิร์ฟ")
+            ctx: discord.Interaction,
+            choise: Option(str, "เลือกคำสั่งที่ต้องการ", choices=["ถอนสิทธิ์", "ให้สิทธิ์"]),
+            member: Option(discord.Member, "เลือกผู้เล่นที่ต้องการปรับสิทธิ์เข้าใช้งานเซิร์ฟ")
     ):
         method = ["ถอนสิทธิ์", "ให้สิทธิ์"]
         try:
             if choise == method[0]:
                 Users().approved(member.id, 0)
-                return await ctx.response.send_message(f"ระบบทำการปลดสิทธิ์เข้าใช้งานสำหรับ {member.mention} เรียบร้อยแล้ว", ephemeral=True)
+                return await ctx.response.send_message(
+                    f"ระบบทำการปลดสิทธิ์เข้าใช้งานสำหรับ {member.mention} เรียบร้อยแล้ว", ephemeral=True)
             elif choise == method[1]:
                 Users().approved(member.id, 1)
-                return await ctx.response.send_message(f"ระบบทำการปรับสิทธิ์เข้าใช้งานให้กับ {member.mention} เรียบร้อยแล้ว", ephemeral=True)
+                return await ctx.response.send_message(
+                    f"ระบบทำการปรับสิทธิ์เข้าใช้งานให้กับ {member.mention} เรียบร้อยแล้ว", ephemeral=True)
         except Exception as e:
             return await ctx.response.send_message(e, ephemeral=True)
 
-
     @admin.command(name="ควบคุมระบบลงทะเบียน", description="คำสั่งเปิดหรือปิดระบบลงทะเบียน")
-    async def register_system(self, ctx:discord.Interaction, method:Option(str, 'เลือกคำสั่งที่ต้องการ', choices=["Open", "Close"])):
+    async def register_system(self, ctx: discord.Interaction,
+                              method: Option(str, 'เลือกคำสั่งที่ต้องการ', choices=["Open", "Close"])):
         try:
             update_sys(method)
         except Exception as e:
@@ -118,28 +121,27 @@ class AdminCommand(commands.Cog):
 
     @admin.command(name="ควบคุมระบบเควส", description="คำสั่งเปิดหรือปิดระบบเควส")
     async def system_quest(self, ctx: discord.Interaction,
-                              method: Option(str, 'เลือกคำสั่งที่ต้องการ', choices=["Open", "Close"])):
+                           method: Option(str, 'เลือกคำสั่งที่ต้องการ', choices=["Open", "Close"])):
         try:
             update_quest(method)
         except Exception as e:
             return await ctx.response.send_message(e, ephemeral=True)
         else:
-            return await ctx.response.send_message(f"{method} ระบบลงทะเบียนเรียบร้อยแล้ว", ephemeral=True)
-
+            return await ctx.response.send_message(f"{method} ระบบระบบเควสเรียบร้อยแล้ว", ephemeral=True)
 
     @admin.command(name="ควบคุมระบบภารกิจ", description="คำสั่งเปิดหรือปิดระบบภารกิจเริ่มต้น")
     async def system_update_teaser(self, ctx: discord.Interaction,
-                              method: Option(str, 'เลือกคำสั่งที่ต้องการ', choices=["Open", "Close"])):
+                                   method: Option(str, 'เลือกคำสั่งที่ต้องการ', choices=["Open", "Close"])):
         try:
             update_teaser(method)
         except Exception as e:
             return await ctx.response.send_message(e, ephemeral=True)
         else:
-            return await ctx.response.send_message(f"{method} ระบบลงทะเบียนเรียบร้อยแล้ว", ephemeral=True)
-
+            return await ctx.response.send_message(f"{method} ระบบภารกิจเรียบร้อยแล้ว", ephemeral=True)
 
     @admin.command(name="town", description="คำสั่งตรวจสอบสิทธิ์ของจำนวนเมืองคงเหลือ")
-    async def limit_town(self, ctx:discord.Interaction, town:Option(str, "เลือกเมืองที่ต้องการตรวจสอบ", choices=town_list)):
+    async def limit_town(self, ctx: discord.Interaction,
+                         town: Option(str, "เลือกเมืองที่ต้องการตรวจสอบ", choices=town_list)):
         await ctx.response.defer(ephemeral=True, invisible=False)
         msg = await ctx.followup.send("โปรดรอสักครู่ระบบกำลังประมาลผลการทำงาน")
         try:
@@ -153,18 +155,17 @@ class AdminCommand(commands.Cog):
         else:
             await msg.edit(content=amount)
 
-
     @admin.command(name="ตรวจสอบจำนวนผู้ลงทะเบียน", description="คำสั่งตรวจสอบจำนวนผู้เล่นที่ลงทะเบียนไว้")
-    async def player_count_check(self, ctx:discord.Interaction):
+    async def player_count_check(self, ctx: discord.Interaction):
         total = Users().user_count()
         await ctx.response.send_message(total, ephemeral=True)
 
     @admin.command(name="เปลี่ยนเมืองให้ผู้เล่น", description="คำสั่งย้ายเมืองให้กับผู้เล่น")
     async def change_city_to_player(
             self,
-            ctx:discord.Interaction,
-            member:Option(discord.Member, "เลือกผู้เล่นที่ต้องการเปลี่ยนเมือง"),
-            city:Option(str, "เลือกเมืองที่ต้องการเปลี่ยน",choices=city_list)
+            ctx: discord.Interaction,
+            member: Option(discord.Member, "เลือกผู้เล่นที่ต้องการเปลี่ยนเมือง"),
+            city: Option(str, "เลือกเมืองที่ต้องการเปลี่ยน", choices=city_list)
     ):
         await ctx.response.defer(ephemeral=True, invisible=False)
         msg = await ctx.followup.send('ระบบกำลังประมวลผลการทำงานโปรดรอสักครู่')
@@ -177,12 +178,11 @@ class AdminCommand(commands.Cog):
         else:
             await msg.edit(content=f"ระบบทำการเปลี่ยนเมืองให้กับ {member.display_name} เรียบร้อย")
 
-
     @admin.command(name="เช็คข้อมูลผู้ใช้งาน", description="คำสั่งเช็คข้อมูลของผู้เล่น")
     async def check_all_info_player(
             self,
-            ctx:discord.Interaction,
-            member:Option(discord.Member, "เลือกผู้ใช้งาน")
+            ctx: discord.Interaction,
+            member: Option(discord.Member, "เลือกผู้ใช้งาน")
 
     ):
         try:
@@ -193,9 +193,8 @@ class AdminCommand(commands.Cog):
             await ctx.response.send_message(data, ephemeral=True)
 
     @admin.command(name="อัพเดทข้อมูลการลงทะเบียนเมือง", description="เช็คข้อมูลของเมืองและจำนวนการลงทะเบียน")
-    async def all_city_info(self, ctx:discord.Interaction):
+    async def all_city_info(self, ctx: discord.Interaction):
         try:
-            data = City().citys()
             city_1 = City().citizen_count(city_list[0])
             city_2 = City().citizen_count(city_list[1])
             city_3 = City().citizen_count(city_list[2])
@@ -203,7 +202,7 @@ class AdminCommand(commands.Cog):
         except Exception as e:
             print(e)
         else:
-            embed=discord.Embed(
+            embed = discord.Embed(
                 title="ข้อมูลเมืองและจำนวนพลเมือง"
             )
             embed.add_field(name=city_list[0], value=f"```จำนวนพลเมืองขณะนี้  {city_1}```", inline=False)

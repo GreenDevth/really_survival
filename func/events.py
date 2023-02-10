@@ -1,4 +1,3 @@
-from db.Events import TeaserEvent
 from session.SessionContent import *
 from session.extraContents import *
 

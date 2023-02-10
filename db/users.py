@@ -37,3 +37,35 @@ class Users:
         return self.db.execute('update users set verify=? where discord_id=?', (number, member,))
     def update_city(self, city, member):
         return self.db.execute('update users set party_name=? where discord_id=?', (city, member))
+
+
+
+class Supporter:
+    def __init__(self):
+        self.db = SQLite()
+
+
+    def drop_table(self):
+        table_name = "supporter"
+        sql_cmd = '''DROP TABLE IF EXISTS {}'''.format(table_name, )
+        return self.db.execute(sql_cmd, ())
+
+    def create_table(self):
+        tb_name = "supporter"
+        sql_cmd = '''CREATE TABLE IF NOT EXISTS {}(
+            id integer not null ,
+            discord_id text null ,
+            steam_id text null ,
+            tag_id text null,
+            amount text null,
+            primary key (id autoincrement )
+        )'''.format(tb_name, )
+        return self.db.execute(sql_cmd, ())
+
+    def check(self, member):
+        return self.db.fetchone('select count(*) from supporter where discord_id=?',(member,))[0]
+    def new(self, member, steam, tag_id, amount):
+        return self.db.execute('insert into supporter(discord_id, steam_id, tag_id, amount) VALUES (?,?,?,?)', (member,steam,tag_id,amount))
+
+    def get(self):
+        return self.db.fetchall('select * from supporter order by id', ())

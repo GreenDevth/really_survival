@@ -6,7 +6,7 @@ from discord.utils import get
 from db.Ranking import Ranking
 from db.Events import Event, TeaserEvent
 from db.town import City
-from db.users import Users
+from db.users import Users, Supporter
 from func.city import town_list, city_list
 from func.config import update_cooldown, get_cooldown_time, update_sys, update_quest, update_teaser
 from scripts.guilds import guild_data, roles_lists
@@ -84,6 +84,11 @@ class AdminCommand(commands.Cog):
                 TeaserEvent().drop_table()
                 TeaserEvent().create_table()
                 return await ctx.response.send_message(f"reset {db_name} successfully...", ephemeral=True)
+            elif db_name == "supporter":
+                Supporter().drop_table()
+                Supporter().create_table()
+                return await ctx.response.send_message(f"reset {db_name} successfully...", ephemeral=True)
+
             else:
                 return await ctx.response.send_message(f"database -> ` {db_name} ` : ไม่มีอยู่ในระบบ", ephemeral=True)
         except Exception as e:

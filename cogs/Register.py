@@ -53,9 +53,9 @@ class RegisterVeiw(discord.ui.View):
 
         def user_check():
             total = Users().user_count()
-            if total > 35:
+            if total > 38:
                 return True
-            elif total < 35:
+            elif total < 38:
                 return False
 
         if retry:

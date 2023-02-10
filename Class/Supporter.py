@@ -35,7 +35,7 @@ class SupporterMembers(commands.Cog):
                 if Supporter().check(discord_id) == 1:
                     return await msg.edit(content=f"{member.mention} ได้บันทึกข้อมูลไว้แล้ว")
                 else:
-                    Supporter().new(discord_id,discord_tag,steam_id, amount)
+                    Supporter().new(discord_id,steam_id,discord_tag, amount)
             except Exception as e:
                 print(e)
             else:

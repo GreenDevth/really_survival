@@ -8,7 +8,8 @@ from db.Events import Event, TeaserEvent
 from db.town import City
 from db.users import Users, Supporter
 from func.city import town_list, city_list
-from func.config import update_cooldown, get_cooldown_time, update_sys, update_quest, update_teaser
+from func.config import update_cooldown, get_cooldown_time, update_sys, update_quest, update_teaser, update_town_amount, \
+    get_town_amount
 from scripts.guilds import guild_data, roles_lists
 
 guild_id = guild_data()["realistic"]
@@ -134,6 +135,19 @@ class AdminCommand(commands.Cog):
         else:
             return await ctx.response.send_message(f"{method} ระบบระบบเควสเรียบร้อยแล้ว", ephemeral=True)
 
+
+    @admin.command(name="เพิ่มหรือลดจำนวนพลเมือง", description="คำสั่งเพิ่มหรือลดจำนวนพลเมืองสำหรับแอดมิน")
+    async def seperate_amount_people(self, ctx:discord.Interaction, amount:Option(int, "กำหนดจำนวนที่ต้องการ")):
+        await ctx.response.defer(ephemeral=True, invisible=False)
+        msg = await ctx.followup.send("รอสักครู่ระบบกำลังประมวลผลการทำงาน")
+
+        try:
+            update_town_amount(amount)
+        except Exception as e:
+            return await msg.edit(content=e)
+        else:
+            return await msg.edit(content=f"เปลี่ยนจำนวน พลเมืองของแต่ละเมืองเป็น {amount} จาก {get_town_amount()} คน")
+
     @admin.command(name="ควบคุมระบบภารกิจ", description="คำสั่งเปิดหรือปิดระบบภารกิจเริ่มต้น")
     async def system_update_teaser(self, ctx: discord.Interaction,
                                    method: Option(str, 'เลือกคำสั่งที่ต้องการ', choices=["Open", "Close"])):
@@ -204,6 +218,7 @@ class AdminCommand(commands.Cog):
             city_2 = City().citizen_count(city_list[1])
             city_3 = City().citizen_count(city_list[2])
             city_4 = City().citizen_count(city_list[3])
+            city_5 = City().citizen_count(city_list[4])
         except Exception as e:
             print(e)
         else:
@@ -214,8 +229,30 @@ class AdminCommand(commands.Cog):
             embed.add_field(name=city_list[1], value=f"```จำนวนพลเมืองขณะนี้  {city_2}```", inline=False)
             embed.add_field(name=city_list[2], value=f"```จำนวนพลเมืองขณะนี้  {city_3}```", inline=False)
             embed.add_field(name=city_list[3], value=f"```จำนวนพลเมืองขณะนี้  {city_4}```", inline=False)
+            embed.add_field(name=city_list[4], value=f"```จำนวนพลเมืองขณะนี้  {city_5}```", inline=False)
 
             await ctx.response.send_message(embed=embed, ephemeral=True)
+
+
+    @admin.command(name="ถอนการสมัครของผู้เล่น", description="คำสั่งลบข้อมูลผู้เล่นออกจากระบบ")
+    async def delete_all_player_information(self, ctx:discord.Interaction, member:discord.Member):
+        await ctx.response.defer(ephemeral=True, invisible=True)
+
+        msg = await ctx.followup.send("โปรดรอสักครู่ระบบกำลังประมวลผลการทำงาน")
+
+        try:
+            check = Users().check(member.id)
+            final_check = City().count_player(member.id)
+
+            if check == 1:
+                Users().delete(member.id)
+            if final_check == 1:
+                City().delete(member.id)
+        except Exception as e:
+            return await msg.edit(content=e)
+        else:
+            await discord.DMChannel.send(member, "คุณถูกระบบถอนสิทธิ์การสมัครใช้งานเซิร์ฟเนื่องจาก มีความล่าช้าในการยืนยันสิทธิ์จอง Slot ของเซิร์ฟ")
+            return await msg.edit(content=f"ถอนสิทธิ์การใช้สมัครของ {member.mention} เป็นที่เรียบร้อยแล้ว")
 
 
 def setup(bot):

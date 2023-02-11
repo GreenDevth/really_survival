@@ -2,7 +2,6 @@ import discord
 from discord.ext import commands
 from discord.commands import SlashCommandGroup, Option
 
-from tabulate import tabulate
 from db.users import Supporter, Users
 
 from scripts.guilds import guild_data
@@ -48,7 +47,6 @@ class SupporterMembers(commands.Cog):
             method:Option(str,"เลือกคำสั่ง", choices=["True", "False"])
     ):
 
-        guild = ctx.guild
         await ctx.response.defer(ephemeral=True, invisible=False)
         msg = await ctx.followup.send("ระบบกำลังประมวลผล")
 
@@ -61,3 +59,20 @@ class SupporterMembers(commands.Cog):
                 print(data)
         else:
             await ctx.response.send_message('ok',ephemeral=True)
+
+
+    @supporter.command(name="เช็คสิทธิ์และสล๊อตคงเหลือ", description="คำสั่งเช็คจำนวน Slot คงเหลือ")
+    async def slot_check(self, ctx:discord.Interaction, method:Option(str, "เลือกคำสั่งที่ต้องการ", choices=["check"])):
+        if method == "check":
+            try:
+                check = Supporter().count()
+                if check == 38:
+                    return await ctx.response.send_message("จำนวนผู้เล่นเต็มแล้ว", ephemeral=True)
+                else:
+                    pass
+            except Exception as e:
+                return await ctx.response.send_message(e, ephemeral=True)
+            else:
+                return await ctx.response.send_message(f"จำนวน Slot คงเหลือคือ {check} Slot", ephemeral=True)
+
+

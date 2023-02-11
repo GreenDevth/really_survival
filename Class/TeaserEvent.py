@@ -118,6 +118,7 @@ class GetTeaser(discord.ui.View):
         teaser_id = list(TeaserEvent().teaser_list())
         await interaction.response.defer(ephemeral=True, invisible=False)
         msg = await interaction.followup.send(f"{member.mention} ⏳ โปรดรอสักครู่ ระบบกำลังสุ่มตำแหน่งกล่องให้กับคุณ")
+        print(len(teaser_id))
         if len(teaser_id) == 0:
             return await msg.edit(content="ภารกิจชุดที่ 1 ได้ส่งมอบให้ผู้เล่นหมดแล้ว")
 
@@ -126,9 +127,10 @@ class GetTeaser(discord.ui.View):
 
             while True:
                 try:
-                    match = random.randint(1,3)
+                    match = random.randint(1,40)
                     if match in teaser_id:
                         TeaserEvent().update_list(member.id, match)
+                        print(match)
                         return match
                     else:
                         pass

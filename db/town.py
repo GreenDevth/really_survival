@@ -49,5 +49,11 @@ class City:
     def citys(self):
         return self.db.fetchall('select * from town order by id',())
 
+    def count_player(self, member):
+        return self.db.fetchone('select count(*) from town where discord_id=?', (member,))[0]
+
+    def delete(self, member):
+        return self.db.execute('delete from town where discord_id=?', (member,))
+
 
 

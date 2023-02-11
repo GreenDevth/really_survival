@@ -1,10 +1,12 @@
 import asyncio
 
 import discord
+import discord.ui
 from discord.ext import commands
 from discord.utils import get
 
 from db.town import City
+from db.users import Supporter
 from func.city import city_list
 from scripts.guilds import guild_data
 from views.Members.MemberViews import UsersViews
@@ -28,6 +30,7 @@ class MemberProfile(commands.Cog):
     @commands.Cog.listener()
     async def on_ready(self):
         self.bot.add_view(CityClose())
+        # self.bot.add_view(Close())
 
     @commands.command(name="player")
     async def i_player(self, ctx):
@@ -98,5 +101,47 @@ class MemberProfile(commands.Cog):
         else:
             return await ctx.send(f"กรุณาพิมพ์คำสั่งของคุณที่ห้อง {channel.mention} เท่านั้น", delete_after=5)
 
+    @commands.command(name="slot")
+    async def slot_check_command(self, ctx):
+        member = ctx.author
+        await ctx.message.delete()
+        guild = ctx.guild
+        room_name = "📝-ผู้ใช้งาน-id-{}".format(member.discriminator)
+
+        channel = get(guild.channels, name=room_name)
+        if ctx.channel == channel and member == ctx.author:
+            try:
+                check = Supporter().count()
+                if check == 38:
+                    embed = discord.Embed(
+                        title="จำนวนผู้เล่นเต็มแล้ว",
+                        colour=discord.Colour.from_rgb(242, 20, 9)
+                    )
+                    embed.set_footer(text="พิมพ์คำสั่ง !player เพื่อรีเซ็ตหน้าโปรไฟล์ของคุณ")
+                    return await ctx.send(embed=embed, view=Close())
+                else:
+                    pass
+            except Exception as e:
+                print(e)
+            else:
+                embed = discord.Embed(
+                    title="Game Slot Avaliable",
+                    colour=discord.Colour.from_rgb(12, 131, 73)
+                )
+                embed.add_field(name="จำนวนคงเหลือ",
+                                value=f"```{38-check} Slot```")
+                embed.set_footer(text="พิมพ์คำสั่ง !player เพื่อรีเซ็ตหน้าโปรไฟล์ของคุณ")
+                return await ctx.send(embed=embed, view=Close())
+        else:
+            return await ctx.send(f"กรุณาพิมพ์คำสั่งของคุณที่ห้อง {channel.mention} เท่านั้น", delete_after=5)
+
 def setup(bot):
     bot.add_cog(MemberProfile(bot))
+
+class Close(discord.ui.View):
+    def __init__(self):
+        super(Close, self).__init__(timeout=None)
+    @discord.ui.button(label="ปิด", style=discord.ButtonStyle.danger, custom_id="close_window")
+    async def close_window(self, button,interaction:discord.Interaction):
+        button.disabled=False
+        await interaction.channel.purge(limit=1)

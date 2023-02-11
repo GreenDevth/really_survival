@@ -37,6 +37,11 @@ class Users:
         return self.db.execute('update users set verify=? where discord_id=?', (number, member,))
     def update_city(self, city, member):
         return self.db.execute('update users set party_name=? where discord_id=?', (city, member))
+    def wallet_update(self, member, amount):
+        return self.db.execute('update users set wallet=? where discord_id=?', (amount, member,))
+
+    def delete(self, member):
+        return self.db.execute('delete from users where discord_id=?', (member,))
 
 
 
@@ -62,6 +67,8 @@ class Supporter:
         )'''.format(tb_name, )
         return self.db.execute(sql_cmd, ())
 
+    def count(self):
+        return self.db.fetchone('select count(*) from supporter order by id', ())[0]
     def check(self, member):
         return self.db.fetchone('select count(*) from supporter where discord_id=?',(member,))[0]
     def new(self, member, steam, tag_id, amount):

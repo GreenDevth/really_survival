@@ -172,8 +172,8 @@ class UsersViews(discord.ui.View):
 
             else:
                 if TeaserEvent().check(member.id) == 0:
-                    img = discord.File('./img/event/startpack.png')
-                    return await interaction.response.send_message(file=img, view=GetTeaser(self.bot))
+                    # img = discord.File('./img/event/startpack.png')
+                    return await interaction.response.send_message(view=GetTeaser(self.bot))
 
 
 
@@ -240,13 +240,16 @@ class SecretCode(discord.ui.View):
 
                 message = await self.bot.wait_for(event="message", check=check, timeout=60)
                 teaser = TeaserEvent().my_teaser(interaction.user.id)[0]
+                my_exp = Ranking().ranking(member.id)[3]
                 exp = TeaserEvent().my_teaser(member.id)[6]
                 secret = TeaserEvent().get(teaser)[2]
+                wallet = Users().player(member.id)[3]
                 await message.delete()
                 if message.content == secret:
                     try:
                         TeaserEvent().seccess(secret)
-                        Ranking().update_exp(member.id, exp)
+                        Ranking().update_exp(member.id, my_exp + exp)
+                        Users().wallet_update(member.id, wallet + exp)
                     except Exception as e:
                         print(e)
                     else:

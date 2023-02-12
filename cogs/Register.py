@@ -2,7 +2,7 @@ import discord.ui
 from discord.ext import commands
 
 from db.users import Users
-from func.config import get_cooldown_time, database_check, battle_info, server_status, get_system
+from func.config import get_cooldown_time, database_check, battle_info, server_status, get_system, get_server_info
 from registers.Reg_info import Register_Access
 from server.information import server_info, reg_info
 from views.System.Register import RegisterButton, CloseRegisterButton
@@ -97,7 +97,7 @@ class RegisterVeiw(discord.ui.View):
             return await interaction.response.send_message(
                 f'อีก {round(retry, int(get_cooldown_time()))} วินาที คำสั่งถึงจะพร้อมใช้งานอีกครั้ง', ephemeral=True)
 
-        if get_system() == "Close":
+        if get_server_info() == "Close":
             return await interaction.response.send_message(
                 f"{interaction.user.mention} เซิร์ฟเวอร์อยู่ระหว่างพัฒนาระบบ", ephemeral=True)
 
@@ -116,7 +116,7 @@ class RegisterVeiw(discord.ui.View):
             return await interaction.response.send_message(
                 f'อีก {round(retry, int(get_cooldown_time()))} วินาที คำสั่งถึงจะพร้อมใช้งานอีกครั้ง', ephemeral=True)
 
-        if get_system() == "Close":
+        if get_server_info() == "Close":
             return await interaction.response.send_message(
                 f"{interaction.user.mention} เซิร์ฟเวอร์ยังไม่พร้อมให้บริการ", ephemeral=True)
 

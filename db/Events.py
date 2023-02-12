@@ -90,3 +90,32 @@ class TeaserEvent:
         return self.db.fetchone('select count(*) from teaser order by id', ())[0]
 
 
+class ThePolice:
+    def __init__(self):
+        self.db = Events()
+
+    def drop_table(self):
+        sql = '''DROP TABLE IF EXISTS {}'''.format("the_police")
+        return self.db.execute(sql, ())
+
+    def create_table(self):
+        sql = '''CREATE TABLE IF NOT EXISTS {}(
+            id integer not null,
+            town text not null ,
+            discord_id text not null ,
+            role text not null ,
+            primary key (id autoincrement)
+        )'''.format("the_police")
+        return self.db.execute(sql, ())
+
+    def check(self, member):
+        return self.db.fetchone('select count(*) from the_police where discord_id=?', (member,))[0]
+
+    def town_check(self, name):
+        return self.db.fetchone('select count(*) from the_police where town=?', (name,))[0]
+
+    def new(self, member, city, role):
+        return self.db.execute('insert into the_police(town, discord_id, role) VALUES (?,?,?)', (city, member, role,))
+
+    def get(self,member):
+        return self.db.fetchone('select * from the_police where discord_id=?', (member,))

@@ -126,6 +126,7 @@ class MemberProfile(commands.Cog):
             else:
                 embed = discord.Embed(
                     title="Game Slot Avaliable",
+                    description="จำนวนสล๊อตทั้งหมดของเซิร์ฟอยู่ที่ 40 โดยหักลบจำนวน 2 สล๊อตออกเพื่อให้เป็นพื้นที่ของ แอดมินและโดรน ดังนั้น สล๊อตที่สามารถใช้งานได้จริงจึงเหลือเพียง 38 สล๊อต",
                     colour=discord.Colour.from_rgb(12, 131, 73)
                 )
                 embed.add_field(name="จำนวนคงเหลือ",

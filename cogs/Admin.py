@@ -4,12 +4,12 @@ from discord.ext import commands
 from discord.utils import get
 
 from db.Ranking import Ranking
-from db.Events import Event, TeaserEvent
+from db.Events import Event, TeaserEvent, ThePolice
 from db.town import City
 from db.users import Users, Supporter
 from func.city import town_list, city_list
 from func.config import update_cooldown, get_cooldown_time, update_sys, update_quest, update_teaser, update_town_amount, \
-    get_town_amount
+    get_town_amount, update_server_info
 from scripts.guilds import guild_data, roles_lists
 
 guild_id = guild_data()["realistic"]
@@ -89,6 +89,10 @@ class AdminCommand(commands.Cog):
                 Supporter().drop_table()
                 Supporter().create_table()
                 return await ctx.response.send_message(f"reset {db_name} successfully...", ephemeral=True)
+            elif db_name == "the_police":
+                ThePolice().drop_table()
+                ThePolice().create_table()
+                return await ctx.response.send_message(f"reset {db_name} successfully...", ephemeral=True)
 
             else:
                 return await ctx.response.send_message(f"database -> ` {db_name} ` : ไม่มีอยู่ในระบบ", ephemeral=True)
@@ -124,6 +128,16 @@ class AdminCommand(commands.Cog):
             return await ctx.response.send_message(e, ephemeral=True)
         else:
             return await ctx.response.send_message(f"{method} ระบบลงทะเบียนเรียบร้อยแล้ว", ephemeral=True)
+
+    @admin.command(name="เปิดหรือปิดข้อมูลเซิร์ฟ", description="คำสั่งสำหรับแอดมิน เปิดหรือปิดการแสดงข้อมูลเซิร์ฟเวอร์")
+    async def server_switch_infomation(self, ctx:discord.Interaction, method:Option(str, "เลือกคำสั่งที่ต้องการ", choices=["Close", "Open"])):
+        try:
+            update_server_info(method)
+        except Exception as e:
+            return await ctx.response.send_message(e, ephemeral=True)
+        else:
+            return await ctx.response.send_message(f"{method} ระบบระบบเควสเรียบร้อยแล้ว", ephemeral=True)
+
 
     @admin.command(name="ควบคุมระบบเควส", description="คำสั่งเปิดหรือปิดระบบเควส")
     async def system_quest(self, ctx: discord.Interaction,

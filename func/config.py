@@ -107,6 +107,22 @@ def get_system():
         return data["system"]
 
 
+def update_server_info(method):
+    system_file = open('./json_file/sys.json', 'r', encoding='utf-8')
+    json_object = json.load(system_file)
+    system_file.close()
+
+    json_object["server"] = method
+    system_file = open('./json_file/sys.json', 'w', encoding='utf-8')
+    json.dump(json_object, system_file, ensure_ascii=False, indent=4)
+    system_file.close()
+
+def get_server_info():
+    with open('./json_file/sys.json', 'r', encoding='utf-8') as file:
+        data = json.load(file)
+        return data["server"]
+
+
 
 def update_quest(method):
     system_file = open('./json_file/sys.json', 'r', encoding='utf-8')

@@ -132,9 +132,20 @@ class Event_list:
     def create_table(self):
         sql = '''CREATE TABLE IF NOT EXISTS {}(
             id integer not null,
-            town text not null ,
-            discord_id text not null ,
+            town text null ,
+            discord_id text null ,
             role text not null ,
             primary key (id autoincrement)
         )'''.format("the_police_list")
         return self.db.execute(sql, ())
+
+
+    def police_list(self):
+        return [item[0] for item in self.db.fetchall('select id from the_police_list where town is null and discord_id is null', ())]
+
+    def update_police_list(self, town, discord_id, item_id):
+        return self.db.execute('update the_police_list set town=?, discord_id=? where id=?',(town,discord_id,item_id,))
+
+    def event(self, event_id):
+        return self.db.fetchone('select * from the_police_list where id=?',(event_id,))
+

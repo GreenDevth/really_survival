@@ -277,5 +277,30 @@ class AdminCommand(commands.Cog):
             return await msg.edit(content=f"ถอนสิทธิ์การใช้สมัครของ {member.mention} เป็นที่เรียบร้อยแล้ว")
 
 
+
+    @admin.command(name="แสดงผู้นำของแต่ละเมือง", description="คำสั่งแสดงข้อมูลทั้งหมดของเจ้าเมือง")
+    async def town_of_boss(self, ctx:discord.Interaction, method:Option(str, "เลือกคำสั่ง", choices=["True", "Flase"])):
+
+        guild = ctx.guild
+        await ctx.response.defer(ephemeral=True, invisible=False)
+        msg = await ctx.followup.send("ระบบกำลังประมวลผล โปรดรอสักครู่")
+        if method == "True":
+            boss = City().boss()
+
+            try:
+                for x in boss:
+                    embed=discord.Embed(title="รายชื่อหัวหน้าหมู่บ้าน")
+                    for member in guild.members:
+                        if member.id == int(x[0]):
+                            embed.add_field(name="หัวหน้าหมู่บ้าน", value=member.display_name)
+                        else:
+                            pass
+                    embed.add_field(name="เมือง", value=x[1])
+                    await ctx.followup.send(embed=embed)
+            except Exception as e:
+                print(e)
+            else:
+                await msg.edit(content="แสดงรายการสำเร็จ")
+
 def setup(bot):
     bot.add_cog(AdminCommand(bot))

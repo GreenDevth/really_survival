@@ -116,16 +116,11 @@ class MemberProfile(commands.Cog):
 
         try:
             if member in guild.members:
-                if City().boss_check() == 1:
-                    boss_id = City().boss()[0]
-                    my_boss = guild.get_member(int(boss_id))
-                    return await ctx.send(f"{my_boss.mention} ได้ถูกแต่งตั้งให้เป็นหัวหน้าหมู่บ้านไว้แล้ว", delete_after=10)
-                else:
-                    try:
-                        City().update_citizen_boss(member.id)
-                    except Exception as e:
-                        return await ctx.send(e)
-                    return await ctx.send(f"{user.mention} คุณได้เลือกให้ {member.mention} เป็นหัวหน้าหมู่บ้านของคุณเรียบร้อยแล้ว")
+                try:
+                    City().update_citizen_boss(member.id)
+                except Exception as e:
+                    return await ctx.send(e)
+                return await ctx.send(f"{user.mention} คุณได้เลือกให้ {member.mention} เป็นหัวหน้าหมู่บ้านของคุณเรียบร้อยแล้ว")
         except Exception as e:
             await ctx.send(e, delete_after=5)
 

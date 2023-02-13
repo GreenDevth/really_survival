@@ -35,7 +35,7 @@ class City:
         return self.db.execute('update town set character_name=? where discord_id=?', (ign, member,))
 
     def boss(self):
-        return self.db.fetchone('select discord_id from town where boss=1',())
+        return self.db.fetchall('select discord_id, city from town where boss=1',())
 
     def citizen(self, member):
         return self.db.fetchone('select * from town where discord_id=?', (member,))
@@ -57,6 +57,9 @@ class City:
 
     def boss_check(self):
         return self.db.fetchone('select count(*) from town where boss=1',())[0]
+
+    def my_boss(self, city):
+        return self.db.fetchall('select boss from town where city=?',(city,))
 
 
 

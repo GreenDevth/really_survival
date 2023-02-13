@@ -5,10 +5,12 @@ import discord.ui
 from discord.ext import commands
 from discord.utils import get
 
+from Class.The_Police import ThePoliceGet
 from db.town import City
-from db.users import Supporter
+from db.users import Supporter, Users
 from func.city import city_list
 from scripts.guilds import guild_data
+from session.SessionContent import police_event
 from views.Members.MemberViews import UsersViews
 
 guild_id = guild_data()["realistic"]
@@ -85,6 +87,9 @@ class MemberProfile(commands.Cog):
 
 
 
+
+
+
     @commands.command(name="event")
     async def i_event(self, ctx):
         member = ctx.author
@@ -92,14 +97,48 @@ class MemberProfile(commands.Cog):
         guild = ctx.guild
         room_name = "📝-ผู้ใช้งาน-id-{}".format(member.discriminator)
 
+
+
         try:
             channel = get(guild.channels, name=room_name)
             if ctx.channel == channel and member == ctx.author:
-                return await ctx.send("ok", delete_after=5)
+                return await ctx.send(embed=police_event(), view=ThePoliceGet())
+            else:
+                return await ctx.send(f"กรุณาพิมพ์คำสั่งของคุณที่ห้อง {channel.mention} เท่านั้น", delete_after=5)
         except Exception as e:
             return await ctx.send(e, delete_after=5)
-        else:
-            return await ctx.send(f"กรุณาพิมพ์คำสั่งของคุณที่ห้อง {channel.mention} เท่านั้น", delete_after=5)
+
+    @commands.command(name="boss")
+    async def my_boss(self, ctx, member:discord.Member):
+        user = ctx.author
+        guild = ctx.guild
+        await ctx.message.delete()
+
+        try:
+            if member in guild.members:
+                if City().boss_check() == 1:
+                    boss_id = City().boss()[0]
+                    my_boss = guild.get_member(int(boss_id))
+                    return await ctx.send(f"{my_boss.mention} ได้ถูกแต่งตั้งให้เป็นหัวหน้าหมู่บ้านไว้แล้ว", delete_after=10)
+                else:
+                    try:
+                        City().update_citizen_boss(member.id)
+                    except Exception as e:
+                        return await ctx.send(e)
+                    return await ctx.send(f"{user.mention} คุณได้เลือกให้ {member.mention} เป็นหัวหน้าหมู่บ้านของคุณเรียบร้อยแล้ว")
+        except Exception as e:
+            await ctx.send(e, delete_after=5)
+
+    @my_boss.error
+    async def boss_error(self, ctx, error):
+        if isinstance(error, commands.MissingRequiredArgument):
+            await ctx.message.delete()
+            await ctx.send(f"{ctx.author.mention} :กรุณาพิมพ์ ชื่อดิสคอร์ดของหัวหน้าของเมืองที่ต้องการแต่งตั้ง\n"
+                           f"``ตัวอย่าง : @ผู้ดูแลระบบ``", delete_after=10)
+
+
+
+
 
     @commands.command(name="slot")
     async def slot_check_command(self, ctx):

@@ -76,3 +76,33 @@ class Supporter:
 
     def get(self):
         return self.db.fetchall('select * from supporter order by id', ())
+
+
+class PlayerEvent:
+    def __init__(self):
+        self.db = SQLite()
+
+    def drop_table(self):
+        table_name = "player_event"
+        sql_cmd = '''DROP TABLE IF EXISTS {}'''.format(table_name, )
+        return self.db.execute(sql_cmd, ())
+
+    def create_table(self):
+        tb_name = "player_event"
+        sql_cmd = '''CREATE TABLE IF NOT EXISTS {}(
+            id integer not null ,
+            discord_id text null ,
+            steam_id text null ,
+            event_name text null,
+            success integer not null default 0,
+            primary key (id autoincrement )
+        )'''.format(tb_name, )
+        return self.db.execute(sql_cmd, ())
+
+
+    def check(self, member):
+        return self.db.fetchone('select count(*) from player_event where discord_id=?', (member,))[0]
+    def new(self, member, steam, name):
+        return self.db.execute('insert into player_event(discord_id, steam_id, event_name) VALUES (?,?,?)',(member,steam,name,))
+    def event(self, member):
+        return self.db.fetchone('select * from player_event where discord_id=?', (member,))

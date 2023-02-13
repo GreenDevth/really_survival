@@ -4,9 +4,9 @@ from discord.ext import commands
 from discord.utils import get
 
 from db.Ranking import Ranking
-from db.Events import Event, TeaserEvent, ThePolice
+from db.Events import Event, TeaserEvent, ThePolice, Event_list
 from db.town import City
-from db.users import Users, Supporter
+from db.users import Users, Supporter, PlayerEvent
 from func.city import town_list, city_list
 from func.config import update_cooldown, get_cooldown_time, update_sys, update_quest, update_teaser, update_town_amount, \
     get_town_amount, update_server_info
@@ -92,6 +92,14 @@ class AdminCommand(commands.Cog):
             elif db_name == "the_police":
                 ThePolice().drop_table()
                 ThePolice().create_table()
+                return await ctx.response.send_message(f"reset {db_name} successfully...", ephemeral=True)
+            elif db_name == "the_police_list":
+                Event_list().drop_table()
+                Event_list().create_table()
+                return await ctx.response.send_message(f"reset {db_name} successfully...", ephemeral=True)
+            elif db_name == "player_event":
+                PlayerEvent().drop_table()
+                PlayerEvent().create_table()
                 return await ctx.response.send_message(f"reset {db_name} successfully...", ephemeral=True)
 
             else:

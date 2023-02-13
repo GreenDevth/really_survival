@@ -55,5 +55,8 @@ class City:
     def delete(self, member):
         return self.db.execute('delete from town where discord_id=?', (member,))
 
+    def boss_check(self):
+        return self.db.fetchone('select count(*) from town where boss=1',())[0]
+
 
 

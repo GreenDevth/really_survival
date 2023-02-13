@@ -119,3 +119,22 @@ class ThePolice:
 
     def get(self,member):
         return self.db.fetchone('select * from the_police where discord_id=?', (member,))
+
+
+class Event_list:
+    def __init__(self):
+        self.db = Events()
+
+    def drop_table(self):
+        sql = '''DROP TABLE IF EXISTS {}'''.format("the_police_list")
+        return self.db.execute(sql, ())
+
+    def create_table(self):
+        sql = '''CREATE TABLE IF NOT EXISTS {}(
+            id integer not null,
+            town text not null ,
+            discord_id text not null ,
+            role text not null ,
+            primary key (id autoincrement)
+        )'''.format("the_police_list")
+        return self.db.execute(sql, ())

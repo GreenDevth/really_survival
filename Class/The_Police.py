@@ -1,4 +1,5 @@
 import random
+import time
 
 import discord
 from discord.utils import get
@@ -50,6 +51,7 @@ class ThePoliceCommand(commands.Cog):
                 if category:
                     channel = discord.utils.get(guild.channels, name=ch_name)
                     if channel:
+                        await channel.purge()
                         await channel.send(embed=police_event(), view=ThePoliceGet())
                         return await ctx.response.send_message("เปิดการใช้งานฟังก์ชั่นการลงทะเบียนเรียบร้อย",
                                                        ephemeral=True)
@@ -94,37 +96,45 @@ class ThePoliceGet(discord.ui.View):
 
     @discord.ui.button(label="คลิกเพื่อทำการจับฉลาก", style=discord.ButtonStyle.secondary, custom_id="get_role_police")
     async def get_role_police(self, button, interaction:discord.Interaction):
+        await interaction.response.defer(ephemeral=True, invisible=False)
         button.disabled=False
         member = interaction.user
         police_list = Event_list().police_list()
         city = City().citizen(member.id)[1]
+        print(len(police_list))
+
+        if len(police_list) == 0:
+            return await interaction.followup.send("ระบบทำการจับฉลากครบแล้ว")
+        if Event_list().check(member.id) == 1:
+            return await interaction.followup.send(f"คุณจับฉลากได้ {Event_list().player(member.id)}")
 
         def get_item_list():
 
             while True:
+                time.sleep(1)
                 try:
-                    match = random.randint(1, len(police_list))
+                    match = random.randint(1, 5)
                     if match in police_list:
                         Event_list().update_police_list(city, member.id, match)
-                        print(match)
+                        # print(match)
                         return match
                     else:
                         pass
                 except Exception as e:
                     print(e)
+        #
+        await interaction.followup.send(get_item_list())
 
-        if len(police_list) == 0:
-            return await interaction.response.send_message("ระบบทำการจับฉลากครบแล้ว", ephemeral=True)
-
-        if City().citizen(interaction.user.id)[3] == 1:
-            data = Event_list().event(get_item_list())
-            embed= discord.Embed(
-                title="ผู้ต้องสงสัย" if data[0]== "bandit" else "Police",
-            )
-            embed.add_field(name="เมือง", value=data[1])
-            await interaction.response.send_message(embed=embed, ephemeral=True)
-        else:
-            await interaction.response.send_message("คุณไม่ใช่หัวหน้าทีม ไม่สามารถใช้งานคำสั่งนี้ได้", ephemeral=True)
+        #
+        # if City().citizen(interaction.user.id)[3] == 1:
+        #     data = Event_list().event(get_item_list())
+        #     embed= discord.Embed(
+        #         title=data[0],
+        #     )
+        #     embed.add_field(name="เมือง", value=data[1])
+        #     await interaction.response.send_message(embed=embed, ephemeral=True)
+        # else:
+        #     await interaction.response.send_message("คุณไม่ใช่หัวหน้าทีม ไม่สามารถใช้งานคำสั่งนี้ได้", ephemeral=True)
 
 
         

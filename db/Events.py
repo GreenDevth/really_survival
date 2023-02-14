@@ -139,7 +139,8 @@ class Event_list:
         )'''.format("the_police_list")
         return self.db.execute(sql, ())
 
-
+    def check(self, member):
+        return self.db.fetchone('select count(*) from the_police_list where discord_id=?', (member,))[0]
     def police_list(self):
         return [item[0] for item in self.db.fetchall('select id from the_police_list where town is null and discord_id is null', ())]
 
@@ -148,4 +149,7 @@ class Event_list:
 
     def event(self, event_id):
         return self.db.fetchone('select * from the_police_list where id=?',(event_id,))
+
+    def player(self, member):
+        return self.db.fetchone('select * from the_police_list where discord_id=?',(member,))
 

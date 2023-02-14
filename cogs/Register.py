@@ -2,7 +2,8 @@ import discord.ui
 from discord.ext import commands
 
 from db.users import Users
-from func.config import get_cooldown_time, database_check, battle_info, server_status, get_system, get_server_info
+from func.config import get_cooldown_time, database_check, battle_info, server_status, get_system, get_server_info, \
+    reg_amount
 from registers.Reg_info import Register_Access
 from server.information import server_info, reg_info
 from views.System.Register import RegisterButton, CloseRegisterButton
@@ -53,9 +54,9 @@ class RegisterVeiw(discord.ui.View):
 
         def user_check():
             total = Users().user_count()
-            if total > 38:
+            if total > int(reg_amount()):
                 return True
-            elif total < 38:
+            elif total < int(reg_amount()):
                 return False
 
         if retry:

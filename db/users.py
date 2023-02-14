@@ -83,6 +83,9 @@ class Supporter:
     def steam_id(self):
         return [item[0] for item in self.db.fetchall('select steam_id from supporter order by id',())]
 
+    def discord_id(self):
+        return [item[0] for item in self.db.fetchall('select discord_id from supporter where steam_id is not null ',())]
+
 
 class PlayerEvent:
     def __init__(self):

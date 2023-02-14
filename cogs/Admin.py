@@ -9,7 +9,7 @@ from db.town import City
 from db.users import Users, Supporter, PlayerEvent
 from func.city import town_list, city_list
 from func.config import update_cooldown, get_cooldown_time, update_sys, update_quest, update_teaser, update_town_amount, \
-    get_town_amount, update_server_info
+    get_town_amount, update_server_info, update_reg_amount
 from scripts.guilds import guild_data, roles_lists
 
 guild_id = guild_data()["realistic"]
@@ -158,6 +158,8 @@ class AdminCommand(commands.Cog):
             return await ctx.response.send_message(f"{method} ระบบระบบเควสเรียบร้อยแล้ว", ephemeral=True)
 
 
+
+
     @admin.command(name="เพิ่มหรือลดจำนวนพลเมือง", description="คำสั่งเพิ่มหรือลดจำนวนพลเมืองสำหรับแอดมิน")
     async def seperate_amount_people(self, ctx:discord.Interaction, amount:Option(int, "กำหนดจำนวนที่ต้องการ")):
         await ctx.response.defer(ephemeral=True, invisible=False)
@@ -169,6 +171,19 @@ class AdminCommand(commands.Cog):
             return await msg.edit(content=e)
         else:
             return await msg.edit(content=f"เปลี่ยนจำนวน พลเมืองของแต่ละเมืองเป็น {amount} จาก {get_town_amount()} คน")
+
+    @admin.command(name="เพิ่มลดจำนวนการลงทะเบียน", description="คำสั่งเพิ่มลดจำนวนการลงทะเบียน")
+    async def seperate_amount_register(self, ctx:discord.Interaction, amount:Option(int, "ระบุจำนวนที่ต้องการ")):
+        await ctx.response.defer(ephemeral=True, invisible=False)
+        msg = await ctx.followup.send("รอสักครู่ระบบกำลังประมวลผลการทำงาน")
+
+        try:
+            update_reg_amount(amount)
+        except Exception as e:
+            return await msg.edit(content=e)
+        else:
+            return await msg.edit(content=f"เปลี่ยนจำนวนการลงทะเบียนเป็น {amount} จาก {get_town_amount()} คน")
+
 
     @admin.command(name="ควบคุมระบบภารกิจ", description="คำสั่งเปิดหรือปิดระบบภารกิจเริ่มต้น")
     async def system_update_teaser(self, ctx: discord.Interaction,
@@ -247,11 +262,11 @@ class AdminCommand(commands.Cog):
             embed = discord.Embed(
                 title="ข้อมูลเมืองและจำนวนพลเมือง"
             )
-            embed.add_field(name=city_list[0], value=f"```จำนวนพลเมืองขณะนี้  {city_1}```", inline=False)
-            embed.add_field(name=city_list[1], value=f"```จำนวนพลเมืองขณะนี้  {city_2}```", inline=False)
-            embed.add_field(name=city_list[2], value=f"```จำนวนพลเมืองขณะนี้  {city_3}```", inline=False)
-            embed.add_field(name=city_list[3], value=f"```จำนวนพลเมืองขณะนี้  {city_4}```", inline=False)
-            embed.add_field(name=city_list[4], value=f"```จำนวนพลเมืองขณะนี้  {city_5}```", inline=False)
+            embed.add_field(name=city_list[0], value=f"```จำนวนพลเมืองขณะนี้  {city_1} จากทั้งหมด {get_town_amount()}```", inline=False)
+            embed.add_field(name=city_list[1], value=f"```จำนวนพลเมืองขณะนี้  {city_2} จากทั้งหมด {get_town_amount()}```", inline=False)
+            embed.add_field(name=city_list[2], value=f"```จำนวนพลเมืองขณะนี้  {city_3} จากทั้งหมด {get_town_amount()}```", inline=False)
+            embed.add_field(name=city_list[3], value=f"```จำนวนพลเมืองขณะนี้  {city_4} จากทั้งหมด {get_town_amount()}```", inline=False)
+            embed.add_field(name=city_list[4], value=f"```จำนวนพลเมืองขณะนี้  {city_5} จากทั้งหมด {get_town_amount()}```", inline=False)
 
             await ctx.response.send_message(embed=embed, ephemeral=True)
 

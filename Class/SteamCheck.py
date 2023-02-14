@@ -3,6 +3,7 @@ from discord.ext import commands
 from discord.commands import SlashCommandGroup, Option
 
 from db.users import Supporter
+from func.config import img_
 from scripts.guilds import guild_data
 
 guild_id = guild_data()["realistic"]
@@ -31,33 +32,28 @@ class SteamCheckCommand(commands.Cog):
         else:
             return await ctx.followup.send(f"ไม่พบข้อมูลของหมายเลขสตรีม {steam} ในระบบ")
 
-    @steam.command(name="แสดงรายชื่อผู้สมทบทุนทั้งหมด",description="คำสั่งแสดงผุ้สมทบทุนทั้งหมด")
-    async def all_support_list(self, ctx:discord.Interaction):
-        guild = ctx.guild
-        await ctx.response.defer(ephemeral=True, invisible=False)
-
-        try:
-            steam_list = Supporter().steam_id()
-            for s in steam_list:
-                embed=discord.Embed(title="รายชื่อผู้สมทบทุน")
-                for member in guild.members:
-                    if member.id == int(s):
-                        embed.add_field(name="ชื่อสมาชิก", value=member.display_name)
-                    else:
-                        pass
-                await ctx.followup.send(embed=embed)
-
-        except Exception as e:
-            await ctx.followup.send(e)
-        else:
-            await ctx.followup.send('successfully.')
 
     @steam.command(name="ตรวจสอบสตรีมไอดี", description="คำสั่งตรวจสอบไอดีสตรีม")
     async def steam_check(self, ctx:discord.Interaction):
+        await ctx.response.defer(ephemeral=True, invisible=False)
         guild = ctx.guild
-        # await ctx.response.send_message(len(Supporter().steam_id()))
+        discord_id = Supporter().discord_id()
+        channel_name = "📃-รายชื่อผู้สมทบทุน"
+        try:
+            channel = discord.utils.get(guild.channels, name=channel_name)
+            for s in discord_id:
+                for member in guild.members:
+                    if member.id == int(s):
+                        embed=discord.Embed(title="Supporter Information")
+                        embed.add_field(name="DISCORD", value=member.display_name)
+                        embed.add_field(name="ID", value=f"{member.id}")
+                        embed.set_thumbnail(url="{}".format(member.display_avatar))
+                        embed.set_image(url=img_("reg"))
+                        channel_sent = await channel.send(embed=embed)
+                        await channel_sent.add_reaction("💾")
 
-        for x in Supporter().steam_id():
-            discord_id = Supporter().member(x)
-            await ctx.response.send_message(guild.get_member(int(discord_id)).display_name)
-        return await ctx.followup.send("successfully!!!!")
+        except Exception as e:
+            print(e)
+        else:
+            await ctx.followup.send('successfully')
+

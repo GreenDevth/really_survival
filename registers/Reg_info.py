@@ -9,7 +9,7 @@ from views.System.Register import RegisterButton
 
 def count_access():
     amount = Users().user_count()
-    total  = (38 - int(amount))
+    total  = (48 - int(amount))
     return total
 
 

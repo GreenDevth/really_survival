@@ -3,5 +3,6 @@
     "quest": "Open",
     "teaser": "Open",
     "server": "Open",
-    "town": 8
+    "town": 8,
+    "subplayer": "Open"
 }

@@ -22,6 +22,12 @@ def law_information():
                     value="กรณีเกิดการปะทะกันอนุญาตให้ใช้การชกต่อย และการใช้อาวุธระยะประชิดในการทำให้คู่กรณี เจ็บหนักและยอมแพ้แต่ไม่ถึงตาย"
                           "สามารถทำการจับกุม และดำเนินตามความเหมาะสมได้ (ควรมีการต่อรองก่อนการปะทะกัน และไม่ควรทำให้ถึงกับตัวละครตาย)"
                     , inline=False)
+
+    embed.add_field(name="ข้อที่ 3 อาวุธ",
+                    value="ผู้เล่นสามารถใช้อาวุธในการดักปล้นผู้เล่นอื่นได้ แต่ห้ามฆ่าผู้เล่นทุกกรณี "
+                          "(หากมีผู้เล่นตายและมีการฟ้องร้องกันเกิดขึ้น ผู้ยิงจะรับโทษแบน และชดเชยของให้กับผู้เล่น ตามที่ผู้เล่นร้องขอทุกรายการ)"
+                    , inline=False)
+
     embed.set_image(url="https://cdn.discordapp.com/attachments/1012319234841387109/1065840430232637450/barn.png")
     return embed
 
@@ -45,6 +51,7 @@ class MainLawCommand(commands.Cog):
                 channel = discord.utils.get(guild.channels, name=ch_name)
                 if channel:
                     await channel.purge()
+                    await channel.send(embed=law_information())
                 else:
                     channel = await guild.create_text_channel(name=ch_name)
                     await channel.set_permissions(guild.default_role, view_channel=True, send_messages=False)

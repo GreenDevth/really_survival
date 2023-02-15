@@ -9,7 +9,7 @@ from views.System.Register import RegisterButton
 
 def count_access():
     amount = Users().user_count()
-    total  = (48 - int(amount))
+    total  = (52 - int(amount))
     return total
 
 
@@ -18,7 +18,7 @@ class SubPlayer_Register_Access(discord.ui.View):
         super(SubPlayer_Register_Access, self).__init__(timeout=None)
         self.bot = bot
         self.cooldown = commands.CooldownMapping.from_cooldown(1, 30, commands.BucketType.member)
-    @discord.ui.button(label="สมัครสมาชิก", style=discord.ButtonStyle.secondary, emoji="📝", custom_id='reg_access')
+    @discord.ui.button(label="สมัครสมาชิก SubPlayer", style=discord.ButtonStyle.secondary, emoji="📝", custom_id='reg_access')
     async def reg_access(self, button, interaction: discord.Interaction):
         interaction.message.author = interaction.user
         bucket = self.cooldown.get_bucket(interaction.message)
@@ -78,7 +78,7 @@ class SubPlayer_Register_Access(discord.ui.View):
                 await interaction.response.edit_message(content=f"ไปยังห้อง {register_channel.mention} เพื่อเข้าสู่ระบบลงทะเบียน", view=None, embed=None)
                 return await register_channel.send(file=discord.File('./img/concept/steam.png'), view=RegisterButton(self.bot))
 
-    @discord.ui.button(label="ยกเลิก", style=discord.ButtonStyle.danger, emoji="⚠", custom_id="cancle_to_reg")
+    @discord.ui.button(label="ยกเลิก หรือ ออกจากเซิร์ฟ", style=discord.ButtonStyle.secondary, emoji="⚠", custom_id="cancle_to_reg")
     async def cancle_to_reg(self, button, interaction:discord.Interaction):
         button.disabled=False
         await interaction.response.edit_message(content="คุณต้องการออกจากเซิร์ฟเวอร์หรือไม่", view=LeaveServer(), embed=None)

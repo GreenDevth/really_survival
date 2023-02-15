@@ -3,6 +3,7 @@ import asyncio
 import discord
 from discord.ext import commands
 
+from db.users import Users
 from func.config import steam_check, save_to_db
 from server.information import reg_success, success_register
 from views.Members.MemberViews import UsersViews
@@ -75,6 +76,9 @@ class RegisterButton(discord.ui.View):
             return await interaction.response.send_message(
                 f'อีก {round(retry, int(60))} วินาที คำสั่งถึงจะพร้อมใช้งานอีกครั้ง', ephemeral=True)
         await interaction.response.defer(ephemeral=False, invisible=False)
+
+        if Users().check(member.id) == 1:
+            await interaction.response.send_message(f"{member.mention} ขออภัยขณะนี้จำนวนผู้ลงทะเบียนเต็มแล้ว", ephemeral=True)
 
         def check(res):
             return res.author == interaction.user and res.channel == interaction.channel

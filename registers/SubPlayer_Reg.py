@@ -75,7 +75,7 @@ class SubPlayer_Register_Access(discord.ui.View):
                 register_channel = await guild.create_text_channel(name=room_name, category=cate, overwrites=overwrites)
                 await register_channel.edit(sync_permissions=True,)
                 await register_channel.set_permissions(member, view_channel=True, send_messages=True, read_message_history=True, read_messages=True)
-                await interaction.response.edit_message(content=f"ไปยังห้อง {register_channel.mention} เพื่อเข้าสู่ระบบลงทะเบียน", view=None, embed=None)
+                await interaction.response.send_message(f"ไปยังห้อง {register_channel.mention} เพื่อเข้าสู่ระบบลงทะเบียน",ephemeral=True)
                 return await register_channel.send(file=discord.File('./img/concept/steam.png'), view=RegisterButton(self.bot))
 
     @discord.ui.button(label="ยกเลิก หรือ ออกจากเซิร์ฟ", style=discord.ButtonStyle.secondary, emoji="⚠", custom_id="cancle_to_reg")

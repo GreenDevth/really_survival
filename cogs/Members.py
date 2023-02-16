@@ -7,7 +7,7 @@ from discord.utils import get
 
 from Class.The_Police import ThePoliceGet
 from db.town import City
-from db.users import Supporter, Users
+from db.users import Supporter
 from func.city import city_list
 from scripts.guilds import guild_data
 from session.SessionContent import police_event

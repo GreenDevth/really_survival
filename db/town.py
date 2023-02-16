@@ -61,5 +61,11 @@ class City:
     def my_boss(self, city):
         return self.db.fetchall('select boss from town where city=?',(city,))
 
+    def discord_id(self, city):
+        return [item[0] for item in self.db.fetchall('select discord_id from town where city=?', (city,))]
+
+    def get_boss(self, city):
+        return self.db.fetchone('select discord_id, boss from town where city=? and boss=1', (city,))
+
 
 

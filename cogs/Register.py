@@ -48,6 +48,8 @@ class RegisterVeiw(discord.ui.View):
     @discord.ui.button(label='ขอสิทธิ์ใช้งาน', style=discord.ButtonStyle.secondary, emoji="📝", custom_id="requrest")
     async def request(self, button, interaction: discord.Interaction):
         button.disabled = False
+        member = interaction.user
+        guild = interaction.guild
         interaction.message.author = interaction.user
         bucket = self.cooldown.get_bucket(interaction.message)
         retry = bucket.update_rate_limit()
@@ -72,7 +74,18 @@ class RegisterVeiw(discord.ui.View):
             return await interaction.response.send_message(f"⚠ {interaction.user.mention} ขออภัยขณะนี้สิทธิ์ในการใช้งานเซิร์ฟเวอร์ครบจำนวน {Users().user_count()} แล้ว", ephemeral=True)
 
         if Users().check(interaction.user.id) != 0:
-            return await interaction.response.send_message(f"⚠ {interaction.user.mention} คุณได้สมัครเข้าร่วมโปรเจค The Walking Dead เป็นที่เรียบร้อยแล้ว", ephemeral=True)
+            room_name = "📝-ผู้ใช้งาน-id-{}".format(member.discriminator)
+            try:
+                channel = discord.utils.get(guild.channels,name=room_name)
+                if channel:
+                    return await interaction.response.send_message(f"⚠ {interaction.user.mention} คุณได้สมัครเข้าร่วมโปรเจค The Walking Dead เป็นที่เรียบร้อยแล้ว {channel.mention}", ephemeral=True)
+                else:
+                    channel = await guild.create_text_channel(name=room_name)
+                    await channel.set_permissions(guild.default_role, view_channel=False)
+                    await channel.set_permissions(member, view_channel=True, send_messages=True)
+                    return await interaction.response.send_message(f"{member.mention} ไปยังห้องของคุณได้ที่ {channel.mention}", ephemeral=True)
+            except Exception as e:
+                return await interaction.response.send_message(e)
         else:
 
             await interaction.response.defer(ephemeral=True, invisible=False)

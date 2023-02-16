@@ -223,12 +223,20 @@ class AdminCommand(commands.Cog):
             member: Option(discord.Member, "เลือกผู้เล่นที่ต้องการเปลี่ยนเมือง"),
             city: Option(str, "เลือกเมืองที่ต้องการเปลี่ยน", choices=city_list)
     ):
+        guild = ctx.guild
         await ctx.response.defer(ephemeral=True, invisible=False)
         msg = await ctx.followup.send('ระบบกำลังประมวลผลการทำงานโปรดรอสักครู่')
+
+        old = discord.utils.get(guild.roles, name=City().citizen(member.id)[2])
+        new = discord.utils.get(guild.roles, name=city)
+
+
 
         try:
             City().change_city(member.id, city)
             Users().update_city(city, member.id)
+            await member.remove_roles(old)
+            await member.add_roles(new)
         except Exception as e:
             print(e)
         else:

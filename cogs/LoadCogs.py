@@ -1,5 +1,6 @@
 from Class.ChangeCity import ChangeCityCommand
 from Class.MainLaw import MainLawCommand
+from Class.MyTown import MyTownCommand
 from Class.SteamCheck import SteamCheckCommand
 from Class.SubPlayer import SubPlayerCommand
 from Class.TeaserEvent import TeaserEvents
@@ -21,3 +22,4 @@ def setup(bot):
     bot.add_cog(VerifyPlayerCommand(bot))
     bot.add_cog(SteamCheckCommand(bot))
     bot.add_cog(MainLawCommand(bot))
+    bot.add_cog(MyTownCommand(bot))

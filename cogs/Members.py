@@ -5,12 +5,11 @@ import discord.ui
 from discord.ext import commands
 from discord.utils import get
 
-from Class.The_Police import ThePoliceGet
+from db.Events import Event_list
 from db.town import City
 from db.users import Supporter
 from func.city import city_list
 from scripts.guilds import guild_data
-from session.SessionContent import police_event
 from views.Members.MemberViews import UsersViews
 
 guild_id = guild_data()["realistic"]
@@ -97,16 +96,21 @@ class MemberProfile(commands.Cog):
         guild = ctx.guild
         room_name = "📝-ผู้ใช้งาน-id-{}".format(member.discriminator)
 
-
-
         try:
             channel = get(guild.channels, name=room_name)
             if ctx.channel == channel and member == ctx.author:
-                return await ctx.send(embed=police_event(), view=ThePoliceGet())
+                data = Event_list().get()
+                await ctx.send(data)
+                for x in data:
+                    txt = f"เมือง {x[0]} ได้รับบทบาทเป็น {x[1]}"
+                    await ctx.send(f"```{txt.strip()}```")
+                return
             else:
                 return await ctx.send(f"กรุณาพิมพ์คำสั่งของคุณที่ห้อง {channel.mention} เท่านั้น", delete_after=5)
         except Exception as e:
             return await ctx.send(e, delete_after=5)
+
+
 
     @commands.command(name="boss")
     async def my_boss(self, ctx, member:discord.Member):

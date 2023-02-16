@@ -153,3 +153,6 @@ class Event_list:
     def player(self, member):
         return self.db.fetchone('select * from the_police_list where discord_id=?',(member,))
 
+    def get(self):
+        return self.db.fetchall('select town, role from the_police_list where discord_id is not null ',())
+

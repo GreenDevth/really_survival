@@ -29,10 +29,12 @@ extra_list = [
 ]
 extra_content = [
     extra_000(),
+    lose_weapon(),
     extra_001()
 ]
 content = [
     event_001(),
+    combined(),
     event_002(),
     event_003()
 ]

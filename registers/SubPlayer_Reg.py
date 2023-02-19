@@ -35,7 +35,7 @@ class SubPlayer_Register_Access(discord.ui.View):
         button.disabled = False
         member = interaction.user
         guild = interaction.guild
-        cat_name = "USER PROFILES"
+        cat_name = "SUBPLAYER PROFILE"
         room_name = "📝-ผู้ใช้งาน-id-{}".format(member.discriminator)
         overwrites = {
             guild.default_role: discord.PermissionOverwrite(
@@ -97,4 +97,4 @@ class LeaveServer(discord.ui.View):
     @discord.ui.button(label="No", style=discord.ButtonStyle.secondary, emoji="🚫", custom_id="player_leave_cancle")
     async def player_leave_cancle(self, button, interaction:discord.Interaction):
         button.disabled=False
-        await interaction.response.edit_message(content=f"{interaction.user.mention} ยกเลิกระบบลงทะเบียนเรียบร้อย", view=None)
+        await interaction.response.send_message(f"{interaction.user.mention} ยกเลิกระบบลงทะเบียนเรียบร้อย")

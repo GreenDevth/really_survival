@@ -227,7 +227,7 @@ class AdminCommand(commands.Cog):
         await ctx.response.defer(ephemeral=True, invisible=False)
         msg = await ctx.followup.send('ระบบกำลังประมวลผลการทำงานโปรดรอสักครู่')
 
-        old = discord.utils.get(guild.roles, name=City().citizen(member.id)[2])
+        old = discord.utils.get(guild.roles, name=City().citizen(member.id)[1])
         new = discord.utils.get(guild.roles, name=city)
 
 

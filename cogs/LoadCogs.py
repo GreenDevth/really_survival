@@ -10,6 +10,7 @@ from Class.Intro import IntroEvent
 from Class.Start import StartProject
 from Class.Supporter import SupporterMembers
 from Class.The_Police import ThePoliceCommand
+from Class.UserCommands import UserCommands
 from Class.VerifyPlayer import VerifyPlayerCommand
 
 
@@ -27,3 +28,4 @@ def setup(bot):
     bot.add_cog(MyTownCommand(bot))
     bot.add_cog(SteamUpdateCommand(bot))
     bot.add_cog(EventCommands(bot))
+    bot.add_cog(UserCommands(bot))

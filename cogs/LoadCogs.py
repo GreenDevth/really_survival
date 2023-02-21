@@ -1,5 +1,6 @@
 from Class.ChangeCity import ChangeCityCommand
 from Class.EventCommand import EventCommands
+from Class.HowToStory import HowToStoryCommand
 from Class.MainLaw import MainLawCommand
 from Class.MyTown import MyTownCommand
 from Class.Save_Rick import SaveRickCommand
@@ -31,3 +32,4 @@ def setup(bot):
     bot.add_cog(EventCommands(bot))
     bot.add_cog(UserCommands(bot))
     bot.add_cog(SaveRickCommand(bot))
+    bot.add_cog(HowToStoryCommand(bot))

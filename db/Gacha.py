@@ -20,4 +20,6 @@ class Gacha:
         return self.db.fetchone('select count(result) from random_event where result=3',())[0]
     def count_4(self):
         return self.db.fetchone('select count(result) from random_event where result=4',())[0]
+    def count(self):
+        return self.db.fetchone('select count(*) from random_event order by id',())[0]
 

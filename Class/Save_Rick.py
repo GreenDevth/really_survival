@@ -5,8 +5,8 @@ from discord.ext import commands
 
 from db.Gacha import Gacha
 from db.Steam import Steam
-from db.users import Users
 from func.config import img_
+
 
 class SaveRickCommand(commands.Cog):
     def __init__(self, bot):
@@ -77,16 +77,18 @@ class SaveRickButton(discord.ui.View):
         interaction.message.author = interaction.user
         bucket = self.cooldown.get_bucket(interaction.message)
         retry = bucket.update_rate_limit()
-        # if retry:
-        #     return await interaction.response.send_message(
-        #         f'อีก {round(retry, int(5))} วินาที คำสั่งถึงจะพร้อมใช้งานอีกครั้ง', ephemeral=True)
+        if retry:
+            return await interaction.response.send_message(
+                f'อีก {round(retry, int(5))} วินาที คำสั่งถึงจะพร้อมใช้งานอีกครั้ง', ephemeral=True)
         await interaction.response.defer(ephemeral=True, invisible=False)
         msg = await interaction.followup.send("ระบบกำลังสุ่มจับฉลากให้กับคุณ")
         try:
             if Gacha().member_check(member.id) == 1:
                 data = Gacha().get(member.id)
                 pass
-                # return await interaction.response.send_message(f"{member.mention} คุณได้จับฉลากไว้แล้ว คุณได้หมายเลข {data[3]}", ephemeral=True)
+                return await msg.edit(content=f"{member.mention} คุณได้จับฉลากไว้แล้ว คุณได้หมายเลข {data[3]}", ephemeral=True)
+            elif Gacha().count() == 40:
+                return await msg.edit(content=f"{member.mention} : จำนวนผู้จับฉลากเต็มแล้ว")
             else:
                 pass
         except Exception as e:
@@ -104,18 +106,43 @@ class SaveRickButton(discord.ui.View):
 
                     if result == 1 and res_1 != 10:
                         Gacha().new(member.id, steam_id, 1)
-                        return await msg.edit(content=result)
+                    elif result == 1 and res_2 != 10:
+                        Gacha().new(member.id, steam_id, 2)
+                    elif result == 1 and res_3 != 10:
+                        Gacha().new(member.id, steam_id, 3)
+                    elif result == 1 and res_4 != 10:
+                        Gacha().new(member.id, steam_id, 4)
+
                     elif result == 2 and res_2 != 10:
                         Gacha().new(member.id, steam_id, 2)
-                        return await msg.edit(content=result)
+                    elif result == 2 and res_1 != 10:
+                        Gacha().new(member.id, steam_id, 1)
+                    elif result == 2 and res_3 != 10:
+                        Gacha().new(member.id, steam_id, 3)
+                    elif result == 2 and res_4 != 10:
+                        Gacha().new(member.id, steam_id, 4)
+
                     elif result == 3 and res_3 != 10:
                         Gacha().new(member.id, steam_id, 3)
-                        return await msg.edit(content=result)
+                    elif result == 3 and res_1 != 10:
+                        Gacha().new(member.id, steam_id, 1)
+                    elif result == 3 and res_2 != 10:
+                        Gacha().new(member.id, steam_id, 2)
+                    elif result == 3 and res_4 != 10:
+                        Gacha().new(member.id, steam_id, 4)
+
                     elif result == 4 and res_4 != 10:
                         Gacha().new(member.id, steam_id, 4)
-                        return await msg.edit(content=result)
+                    elif result == 4 and res_1 != 10:
+                        Gacha().new(member.id, steam_id, 1)
+                    elif result == 4 and res_2 != 10:
+                        Gacha().new(member.id, steam_id, 2)
+                    elif result == 4 and res_3 != 10:
+                        Gacha().new(member.id, steam_id, 3)
                     else:
-                        result = random.randint(1, 4)
+                        pass
 
                 except Exception as e:
                     return await msg.edit(content=e)
+                else:
+                    return await msg.edit(content=f"{member.mention} 💾 ระบบบันทึข้อมูลการจับฉลากของคุณเรียบร้อย")

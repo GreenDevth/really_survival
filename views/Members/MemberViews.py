@@ -3,6 +3,8 @@ import asyncio
 import discord
 from discord.ext import commands
 
+from Quests.db.Mission_db import UserMission
+from Quests.views.GetNewMission import GetMissionButton
 from db.Ranking import Ranking
 from db.town import City
 from db.users import Users, PlayerEvent
@@ -134,7 +136,12 @@ class UsersViews(discord.ui.View):
 
         if PlayerEvent().check(member.id) != 0:
             await interaction.response.defer(ephemeral=True, invisible=False)
-            await interaction.followup.send("คุณมี 1 อีเว้นใหม่ประจำสัปดาห์นี้")
+            return await interaction.followup.send("คุณมี 1 อีเว้นใหม่ประจำสัปดาห์นี้")
+
+        elif UserMission().check(member.id) ==0:
+            return await interaction.response.send_message(file = discord.File("./img/event/startpack.png"),view=GetMissionButton(), ephemeral=True)
+        elif UserMission().check(member.id) != 0:
+            return await interaction.response.send_message("คุณมีภารกิจที่ยังไม่ได้จัดส่งให้กับ Guild Master", ephemeral=True)
         else:
             rank = Ranking().ranking(interaction.user.id)[2]
             embed = discord.Embed(

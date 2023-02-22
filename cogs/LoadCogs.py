@@ -14,6 +14,7 @@ from Class.Supporter import SupporterMembers
 from Class.The_Police import ThePoliceCommand
 from Class.UserCommands import UserCommands
 from Class.VerifyPlayer import VerifyPlayerCommand
+from Quests.Quest import QuestCommand
 
 
 def setup(bot):
@@ -33,3 +34,4 @@ def setup(bot):
     bot.add_cog(UserCommands(bot))
     bot.add_cog(SaveRickCommand(bot))
     bot.add_cog(HowToStoryCommand(bot))
+    bot.add_cog(QuestCommand(bot))

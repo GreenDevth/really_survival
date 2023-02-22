@@ -33,3 +33,6 @@ class Ranking:
         return self.db.execute('update rank set player_rank=? where discord_id=?', (rank, member,))
     def ranking(self, member):
         return self.db.fetchone('select * from rank where discord_id=?', (member,))
+
+    def delete(self, member):
+        return self.db.execute('delete from rank where discord_id=?',(member,))

@@ -72,6 +72,9 @@ class UserMission:
     def end_date(self, member):
         return self.db.fetchone('select end_date from user_mission where discord_id=?', (member,))[0]
 
+    def expansion_time(self, member, start, end):
+        return self.db.execute('update user_mission set start_date=?, end_date=? where discord_id=?', (start, end, member,))
+
     def mission(self,member):
         return self.db.fetchone('select * from user_mission where discord_id=?', (member,))
 

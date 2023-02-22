@@ -7,6 +7,7 @@ from discord.commands import SlashCommandGroup, Option
 from Quests.db.Mission_db import reset_mission, reset_user_mission
 from Quests.views.CreateQuest import CreateMissionButton
 from Quests.views.GetNewMission import GetMissionButton
+from Quests.views.ReportMission import MissionReportButton, ImageUploadButton
 from scripts.guilds import guild_data
 
 guild_id = guild_data()["realistic"]
@@ -36,6 +37,9 @@ class QuestCommand(commands.Cog):
         print(self.__class__.__name__)
         self.bot.add_view(CreateMissionButton(self.bot, None))
         self.bot.add_view(GetMissionButton())
+        self.bot.add_view(MissionReportButton(self.bot))
+        self.bot.add_view(ImageUploadButton(self.bot))
+
 
     @quest.command(name="quest_manager", description="function for quests management system")
     async def quest_manager(self, ctx: discord.Interaction,

@@ -33,12 +33,14 @@ class Users:
         return self.db.fetchone('select * from users where discord_id=?', (member,))
     def check(self, member):
         return self.db.fetchone('select count(*) from users where discord_id=?',(member,))[0]
-    def approved(self, member, number):
-        return self.db.execute('update users set verify=? where discord_id=?', (number, member,))
+    def approved(self, member):
+        return self.db.execute('update users set verify=1 where discord_id=?', (member,))
     def update_city(self, city, member):
         return self.db.execute('update users set party_name=? where discord_id=?', (city, member))
     def wallet_update(self, member, amount):
         return self.db.execute('update users set wallet=? where discord_id=?', (amount, member,))
+    def wallet(self, member):
+        return self.db.fetchone('select wallet from users where discord_id=?', (member,))[0]
 
     def delete(self, member):
         return self.db.execute('delete from users where discord_id=?', (member,))

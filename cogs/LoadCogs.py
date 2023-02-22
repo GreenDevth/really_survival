@@ -1,3 +1,5 @@
+from Approved.VerifyMemer import VerifyMemberCommand
+from Banks.Wallet import UserWalletCommand
 from Class.ChangeCity import ChangeCityCommand
 from Class.EventCommand import EventCommands
 from Class.HowToStory import HowToStoryCommand
@@ -35,3 +37,5 @@ def setup(bot):
     bot.add_cog(SaveRickCommand(bot))
     bot.add_cog(HowToStoryCommand(bot))
     bot.add_cog(QuestCommand(bot))
+    bot.add_cog(UserWalletCommand(bot))
+    bot.add_cog(VerifyMemberCommand(bot))

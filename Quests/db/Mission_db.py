@@ -46,6 +46,7 @@ class UserMission:
             user_id integer not null ,
             discord_id text null ,
             title text null,
+            amount integer null ,
             img longtext null,
             exp integer null default 0,
             coin integer null default 0,
@@ -58,10 +59,10 @@ class UserMission:
     def check(self, member):
         return self.db.fetchone('select count(*) from user_mission where discord_id=?', (member,))[0]
 
-    def new(self, member, title, img, exp, coin, start_date, end_date):
+    def new(self, member, title, amount,img, exp, coin, start_date, end_date):
         return self.db.execute(
-            'insert into user_mission(discord_id, title, img, exp, coin, start_date, end_date) VALUES (?,?,?,?,?,?,?)',
-            (member, title, img, exp, coin, start_date, end_date,))
+            'insert into user_mission(discord_id, title, amount, img, exp, coin, start_date, end_date) VALUES (?,?,?,?,?,?,?,?)',
+            (member, title, amount,img, exp, coin, start_date, end_date,))
 
     def delete(self, member):
         return self.db.execute('delete from user_mission where discord_id=?', (member,))

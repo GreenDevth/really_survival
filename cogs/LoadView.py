@@ -1,7 +1,7 @@
 from discord.ext import commands
 
 from views.Contract.ContactCloseView import ContactCloseButton
-from views.Members.MemberViews import UsersViews
+from views.Members.MemberViews import UsersViews, BankandRank
 from views.System.InfoView import InformationViews
 from views.System.ManualViews import PopulationManualView
 from views.Town.City import CityRegisterButton
@@ -19,6 +19,7 @@ class ViewLoader(commands.Cog):
         self.bot.add_view(UsersViews(self.bot))
         self.bot.add_view(ContactCloseButton(self.bot))
         self.bot.add_view(CityRegisterButton(self.bot))
+        self.bot.add_view(BankandRank())
 
 def setup(bot):
     bot.add_cog(ViewLoader(bot))

@@ -36,3 +36,7 @@ class Ranking:
 
     def delete(self, member):
         return self.db.execute('delete from rank where discord_id=?',(member,))
+    def exp(self, member):
+        return self.db.fetchone('select player_exp from rank where discord_id=?', (member,))[0]
+    def level(self, member):
+        return self.db.fetchone('select player_rank from rank where discord_id=?', (member,))[0]

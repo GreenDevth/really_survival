@@ -50,7 +50,7 @@ class GetMissionButton(discord.ui.View):
             embed.add_field(name="ครบกำหนดส่งสินค้า", value="{}".format(expire_date()[1]))
             embed.set_image(url=data[2])
             try:
-                UserMission().new(member.id, data[1], data[2],data[4], data[5], expire_date()[0], expire_date()[1])
+                UserMission().new(member.id, data[1],data[3], data[2],data[4], data[5], expire_date()[0], expire_date()[1])
                 old = Users().wallet(member.id)
                 total = old - 50
                 Users().wallet_update(member.id, total)

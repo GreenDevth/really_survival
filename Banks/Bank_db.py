@@ -20,6 +20,9 @@ class Bank:
     def delete(self, member):
         return self.db.execute('delete from bank where discord_id=%s', (member,))
 
+    def coins(self, member):
+        return self.db.fetchone('select coins from bank where discord_id=%s', (member,))[0]
+
 
 
 

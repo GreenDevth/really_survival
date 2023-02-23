@@ -16,7 +16,7 @@ def user_info(member):
         color= discord.Colour.from_rgb(21, 182, 13) if verifies == 1 else discord.Colour.from_rgb(245, 127, 16)
     )
     embed.add_field(name="ชื่อผู้ใช้งาน", value=member.mention)
-    embed.add_field(name="กระเป๋าตังค์", value="${:d}".format(data[3]))
+    embed.add_field(name="กระเป๋าตังค์", value="${:,d}".format(data[3]))
     embed.add_field(name="รหัสผู้ใช้งาน", value="#{}".format(member.discriminator))
     embed.add_field(name="เลขสตรีม", value="{}...".format(data[2][:10]))
     embed.add_field(name="ประชากรของ", value= "ยังไม่เข้าร่วมกลุ่ม" if data[4] is None else data[4])
